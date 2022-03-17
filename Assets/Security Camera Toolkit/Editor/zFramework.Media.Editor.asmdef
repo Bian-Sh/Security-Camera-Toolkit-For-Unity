@@ -1,0 +1,18 @@
+{
+    "name": "zFramework.Media.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e62729e7fcc29c649bdfeb04888146f9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
