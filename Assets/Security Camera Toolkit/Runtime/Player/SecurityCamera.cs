@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace zFramework.Media
 {
-    public class SecurityCameraProvider : MonoBehaviour, INVRStateHandler
+    public class SecurityCamera : MonoBehaviour, INVRStateHandler
     {
         [Header("请指定 NVR 主机地址:")]
         public string host;
@@ -13,9 +13,8 @@ namespace zFramework.Media
         [Header("请指定 NVR 通道:")]
         public int channel;
         public STREAM steam_Type = STREAM.MAIN;
-
         public VideoRenderer monitor;
-        SecurityCameraPalyer player = null;
+        CameraService player = null;
         public string Host { get => host; }
 
 
@@ -81,7 +80,7 @@ namespace zFramework.Media
             }
             if (!monitor)
             {
-                Debug.LogWarning($"{nameof(SecurityCameraProvider)}: 请挂载 VideoRenderer ！");
+                Debug.LogWarning($"{nameof(SecurityCamera)}: 请挂载 VideoRenderer ！");
             }
         }
 

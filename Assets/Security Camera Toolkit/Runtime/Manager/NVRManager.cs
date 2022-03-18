@@ -23,7 +23,6 @@ namespace zFramework.Media
     {
         [SerializeField] SDKInitMode m_SDKInitMode = SDKInitMode.Awake;
 
-
         public List<NVRInfomation> nVRs = new List<NVRInfomation>();
 
         //todo : 数据重复提醒，host 格式要对，复选框 要在指定了 host 后激活 、 Provider 可以下拉选择 nvr
@@ -120,7 +119,7 @@ namespace zFramework.Media
                                     //由于现在在其他线程中，需要使用线程同步工具广播
                                     try
                                     {
-                                        TaskSynchronizer.Post(() => handler.OnLogin(handle));
+                                        TaskSync.Post(() => handler.OnLogin(handle));
                                     }
                                     catch (Exception e)
                                     {
@@ -158,7 +157,7 @@ namespace zFramework.Media
                                     //由于现在在其他线程中，需要使用线程同步工具广播
                                     try
                                     {
-                                        TaskSynchronizer.Post(() => handler.OnLogout());
+                                        TaskSync.Post(() => handler.OnLogout());
                                     }
                                     catch (Exception e)
                                     {

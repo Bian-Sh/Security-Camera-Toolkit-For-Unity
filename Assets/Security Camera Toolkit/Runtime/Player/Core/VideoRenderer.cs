@@ -1,6 +1,7 @@
 ﻿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 using System;
+using System.Runtime.InteropServices;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,7 +19,7 @@ namespace zFramework.Media
         #region Show In Inspector
         [Header("开启统计："), Tooltip(aboutstatistics)]
         public bool enableStatistics = true;
-        [Header("绘制帧率："), Range(15, 25), Tooltip(aboutframrate)]
+        [Header("绘制帧率："), Range(15, 60), Tooltip(aboutframrate)]
         public int framerate = 25;
         [Header("帧队列最大容量："), Range(2, 5), Tooltip(aboutQueueSize)]
         public int maxFrameQueueSize = 3;
@@ -131,14 +132,17 @@ namespace zFramework.Media
                     {
                         unsafe
                         {
-                            var src = frame.Buffer;
-                            int lumaSize = lumaWidth * lumaHeight;
-                            _textureY.LoadRawTextureData(src, lumaSize);
-                            src += lumaSize;
-                            int chromaSize = chromaWidth * chromaHeight;
-                            _textureU.LoadRawTextureData(src, chromaSize);
-                            src += chromaSize;
-                            _textureV.LoadRawTextureData(src, chromaSize);
+                            fixed (void* buffer = frame.Buffer2)
+                            {
+                                var src = new IntPtr(buffer);
+                                int lumaSize = lumaWidth * lumaHeight;
+                                _textureY.LoadRawTextureData(src, lumaSize);
+                                src += lumaSize;
+                                int chromaSize = chromaWidth * chromaHeight;
+                                _textureU.LoadRawTextureData(src, chromaSize);
+                                src += chromaSize;
+                                _textureV.LoadRawTextureData(src, chromaSize);
+                            }
                         }
                     }
 

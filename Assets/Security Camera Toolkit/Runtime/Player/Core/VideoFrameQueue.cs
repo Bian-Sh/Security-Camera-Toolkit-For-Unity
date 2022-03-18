@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace zFramework.Media
 {
@@ -26,6 +27,7 @@ namespace zFramework.Media
         /// Raw storage buffer
         /// </summary>
         IntPtr Buffer { get; set; }
+        byte[] Buffer2 { get; set; }
     }
 
     /// <summary>
@@ -47,6 +49,7 @@ namespace zFramework.Media
         /// Raw byte buffer containing the frame data.
         /// </summary>
         public IntPtr Buffer { get; set; }
+        public byte[] Buffer2 { get; set; }
     }
 
     /// <summary>
@@ -195,22 +198,23 @@ namespace zFramework.Media
             T storage = GetStorageFor();
             if (storage == null)
             {
-                // Too many frames in queue, drop the early one
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(droppedDt);
-                _frameQueue.TryDequeue(out storage); //如果队列满了，覆盖早一些的帧数据，
             }
+            else
+            {
+                // Copy the new frame to its storage
+                //storage.Buffer = frame.buffer;
+                storage.Buffer2 = frame.buffer2;
+                storage.Width = frame.width;
+                storage.Height = frame.height;
 
-            // Copy the new frame to its storage
-            storage.Buffer = frame.buffer;
-            storage.Width = frame.width;
-            storage.Height = frame.height;
-
-            // Enqueue for later delivery
-            _frameQueue.Enqueue(storage);
-            _queuedFrameTimeAverage.Push(queuedDt);
-            _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
+                // Enqueue for later delivery
+                _frameQueue.Enqueue(storage);
+                _queuedFrameTimeAverage.Push(queuedDt);
+                _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
+            }
         }
 
 

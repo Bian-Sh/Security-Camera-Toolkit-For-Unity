@@ -24,6 +24,7 @@ namespace zFramework.Media
         /// 帧数据
         /// </summary>
         public IntPtr buffer;
+        public byte[] buffer2;
 
     }
 

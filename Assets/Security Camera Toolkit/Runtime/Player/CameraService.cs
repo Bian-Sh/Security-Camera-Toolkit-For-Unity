@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 namespace zFramework.Media
 {
-    public class SecurityCameraPalyer : IVideoSource
+    public class CameraService : IVideoSource
     {
         public CameraInfomation data;
         public object loginHandle; //登录句柄，数据类型：int 、c#指针 
@@ -38,7 +38,7 @@ namespace zFramework.Media
         }
         protected I420AVideoFrameDelegate fremeReady;
 
-        public SecurityCameraPalyer(CameraInfomation info)
+        public CameraService(CameraInfomation info)
         {
             this.data = info;
         }
@@ -79,7 +79,6 @@ namespace zFramework.Media
         /// </summary>
         public virtual void StopPlay()
         {
-
             isPause = false;
         }
     }
