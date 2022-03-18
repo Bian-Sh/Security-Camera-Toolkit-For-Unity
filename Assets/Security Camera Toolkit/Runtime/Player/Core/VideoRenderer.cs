@@ -206,8 +206,8 @@ namespace zFramework.Media
         #endregion
         #region Tooltips
         const string aboutstatistics = "开启后 OnStatisticsReported 事件才会进行分发，反之不会";
-        const string aboutframrate = "如果 PC 性能好，为快速交换数据稍微设置大一些，接近 SDK 推流帧率即可，反之设小，多丢帧少渲染";
-        const string aboutQueueSize = "一帧视频数据可观，应适度减少队列容量，避免内存高涨";
+        const string aboutframrate = "为快速交换数据稍微设置大一些，目前设小会导致播放画面滞后，推荐值大于 SDK 推流帧率即可";
+        const string aboutQueueSize = "一帧视频数据可观，减少队列容量，避免内存高涨";
         const string aboutevent = "返回值分别为加载 、渲染、丢弃帧数的平均值，对于监控来说，渲染15帧就已经很流畅了";
         #endregion
     }

@@ -25,6 +25,7 @@ namespace zFramework.Media
         /// </summary>
         public override void CleanUp()
         {
+            // todo ： 不能这样写，要把 init 和 clean 分别写到首次 login 和 logout 最好用上 异步，避免卡顿
             Logout();
             if (IsSDKInit)
             {

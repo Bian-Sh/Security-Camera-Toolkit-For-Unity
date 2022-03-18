@@ -29,6 +29,7 @@ namespace zFramework.Media
         //todo: 类似 light Explorer 的场景 监控管理器，方便统一调整配置
         //todo: delayinputfiled  password filed
         //todo: videorenderer 测试 MaterialPropertyBlock ，
+        //todo: 借鉴 ms-webrtc 的 逻辑应该是没用好，要处理，现在放着放着就延迟了
         void Start()
         {
             if (m_SDKInitMode == SDKInitMode.Start)
