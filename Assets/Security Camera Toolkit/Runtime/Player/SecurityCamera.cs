@@ -8,7 +8,6 @@ namespace zFramework.Media
     {
         [Header("请指定 NVR 主机地址:")]
         public string host;
-        [Header("请指定监控商:")]
         public SDK sdk;
         [Header("请指定 NVR 通道:")]
         public int channel;
@@ -97,4 +96,20 @@ namespace zFramework.Media
         }
         #endregion
     }
+
+    public struct FrameInfo 
+    {
+        public int width;
+        public int height;
+        public ulong size;
+        public int enter;
+        public int drop;
+        public int render;
+    }
+
+
+
+
 }
+
+//todo: 绘制调试信息

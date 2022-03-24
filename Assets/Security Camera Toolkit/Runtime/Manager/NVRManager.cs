@@ -2,15 +2,11 @@
 // Licensed under the MIT License.
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Text.RegularExpressions;
 using System.Linq;
 using zFramework.Media.Internal;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 namespace zFramework.Media
 {
@@ -22,8 +18,11 @@ namespace zFramework.Media
     public class NVRManager : MonoBehaviour
     {
         [SerializeField] SDKInitMode m_SDKInitMode = SDKInitMode.Awake;
+        [Range(0.5f, 1.0f)]
+        [Header("数据丢弃比率"),Tooltip("丢弃可以避免数据的对拷，减少渲染的帧数，提升APP整体性能")]
+        public float dataDropRate = 0.8f;
+        public NVRConfiguration configuration;
 
-        public List<NVRInfomation> nVRs = new List<NVRInfomation>();
 
         //todo : 数据重复提醒，host 格式要对，复选框 要在指定了 host 后激活 、 Provider 可以下拉选择 nvr
         //todo: 类似 light Explorer 的场景 监控管理器，方便统一调整配置
@@ -40,7 +39,7 @@ namespace zFramework.Media
         private void Awake()
         {
             EnsureInstanceMode();
-            LoadNvrConfiguration();
+            configuration?.LoadNvrConfiguration();
             if (m_SDKInitMode == SDKInitMode.Awake)
             {
                 InitSDK();
@@ -67,11 +66,14 @@ namespace zFramework.Media
         /// </summary>
         private void InitSDK()
         {
-            foreach (var item in nVRs)
+            if (configuration)
             {
-                if (item.enable)
+                foreach (var item in configuration.nvrs)
                 {
-                    SDKManager.InitSDK(item.type);
+                    if (item.enable)
+                    {
+                        SDKManager.InitSDK(item.type);
+                    }
                 }
             }
         }
@@ -99,10 +101,10 @@ namespace zFramework.Media
         /// <para>由于直接调用登录 API 多少会卡主线程，现在使用 <see cref="Task" />开线程登录</para>
         /// </summary>
         /// <param name="predicate">按用户指定的查询条件登录，如果未指定则全部登录</param>
-        public static void Login(Predicate<NVRInfomation> predicate = null)
+        public static void Login(Predicate<NVRInformation> predicate = null)
         {
             predicate = predicate ?? (_ => true);
-            var nvrs = Instance.nVRs.FindAll(predicate);
+            var nvrs = Instance.configuration.nvrs.FindAll(predicate);
             // 由于 SDK 登录需要访问网络，会存在延迟，为避免卡主线程，此处使用 Task 
             _ = Task.Run(() =>
             {
@@ -139,10 +141,10 @@ namespace zFramework.Media
         /// <para>由于直接调用登出 API 多少会卡主线程，现在使用 <see cref="Task" />开线程登录</para>
         /// </summary>
         /// <param name="predicate">按用户指定的查询条件登出，如果未指定则全部登出</param>
-        public static void Logout(Predicate<NVRInfomation> predicate = null)
+        public static void Logout(Predicate<NVRInformation> predicate = null)
         {
             predicate = predicate ?? (_ => true);
-            var nvrs = Instance.nVRs.FindAll(predicate);
+            var nvrs = Instance.configuration.nvrs.FindAll(predicate);
             _ = Task.Run(() =>
             {
                 foreach (var item in nvrs)
@@ -177,14 +179,14 @@ namespace zFramework.Media
         /// 获取指定的 NVR 登录句柄
         /// </summary>
         /// <param name="predicate">断言</param>
-        /// <remarks>断言建议使用 <see cref="NVRInfomation.host"/> + <see cref="NVRInfomation.type"/>的模式</remarks>
+        /// <remarks>断言建议使用 <see cref="NVRInformation.host"/> + <see cref="NVRInformation.type"/>的模式</remarks>
         /// <param name="handle">登录句柄</param>
         /// <returns>是否获取成功</returns>
-        public static bool TryGetLoginHandle(Predicate<NVRInfomation> predicate, out object handle)
+        public static bool TryGetLoginHandle(Predicate<NVRInformation> predicate, out object handle)
         {
             if (null != predicate)
             {
-                var info = Instance.nVRs.Find(predicate);
+                var info = Instance.configuration.nvrs.Find(predicate);
                 if (!string.IsNullOrEmpty(info.host))
                 {
                     return SDKManager.GetLoginHandle(info, out handle);
@@ -203,7 +205,7 @@ namespace zFramework.Media
         }
         public static string[] GetEnabledHosts()
         {
-            return Instance?.nVRs
+            return Instance?.configuration.nvrs
                                             .Where(v => v.enable)
                                             .Select(v => v.host)
                                             .ToArray();
@@ -250,113 +252,7 @@ namespace zFramework.Media
             }
         }
 
-        #region NVR 数据本地化
-        const string jsonName = "NvrConfiguration.json";
-        string path = Path.Combine(Application.streamingAssetsPath, "Configurations");
 
-        public bool ExistConfiguration() => File.Exists(Path.Combine(path, jsonName));
-        //通过 本地json 获取 NVR 配置，方便动态修改 NVR 配置信息
-
-        /// <summary>
-        /// 将配置保存为 json
-        /// </summary>
-        public void SaveNvrConfiguration()
-        {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            var info = JsonUtility.ToJson(new Wrapper(nVRs), true);
-            var file = Path.Combine(path, jsonName);
-            File.WriteAllText(file, info, Encoding.UTF8);
-#if UNITY_EDITOR
-            AssetDatabase.Refresh();
-            file = FileUtil.GetProjectRelativePath(file);
-            var obj = AssetDatabase.LoadMainAssetAtPath(file);
-            EditorGUIUtility.PingObject(obj);
-#endif
-        }
-        /// <summary>
-        /// 从 本地 JSON 加载 NVR 配置
-        /// </summary>
-        public void LoadNvrConfiguration()
-        {
-            var file = Path.Combine(path, jsonName);
-            if (File.Exists(file))
-            {
-                var info = File.ReadAllText(file);
-                var obj = JsonUtility.FromJson<Wrapper>(info);
-                if (null != obj)
-                {
-                    nVRs = obj.arr;
-#if UNITY_EDITOR
-                    if (!Application.isPlaying)
-                    {
-                        EditorUtility.SetDirty(this);
-                    }
-#endif
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"{nameof(NVRManager)}:不存在 json 配置文件 ，Path 见 ↓ \n{path} ");
-            }
-        }
-
-        [Serializable]
-        class Wrapper
-        {
-            public List<NVRInfomation> arr;
-            public Wrapper(List<NVRInfomation> arr)
-            {
-                this.arr = arr;
-            }
-        }
-
-        #endregion
-
-        #region 数据校验
-        private void OnValidate()
-        {
-            for (int i = 0; i < nVRs.Count; i++)
-            {
-                var nvr = nVRs[i];
-                if (!IsHostMatched(nvr.mapping) && nvr.enableMapping)
-                {
-                    nvr.enableMapping = false;
-                    nVRs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: 启用失败，映射主机非法，请检查！");
-                }
-                if (!IsHostMatched(nvr.host) && nvr.enable)
-                {
-                    nvr.enable = false;
-                    nVRs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: 启用失败，默认主机非法，请检查！");
-                }
-            }
-        }
-        /// <summary>
-        /// 用于校验 IP:Port 的正则
-        /// </summary>
-
-        string pattern_ip = @"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}";
-        string pattern_port = @"^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$";
-        private bool IsHostMatched(string host)
-        {
-            if (!host.EndsWith(":"))
-            {
-                var arr = host.Trim().Split(':');
-                var ip = arr[0];
-                var port = arr.Length == 1 ? "80" : arr[1];
-                var ipMatch = Regex.IsMatch(ip, pattern_ip);
-                var portMatch = Regex.IsMatch(port, pattern_port);
-                return ipMatch && portMatch;
-            }
-            return false;
-        }
-
-
-        #endregion
         /// <summary>
         /// SDK 初始化时机
         /// </summary>
@@ -379,6 +275,14 @@ namespace zFramework.Media
             }
         }//单例
         static Dictionary<string, List<INVRStateHandler>> cameras = new Dictionary<string, List<INVRStateHandler>>();
+        private void Reset()
+        {
+            configuration = NVRConfiguration.Instance;
+            if (!configuration)
+            {
+                Debug.Log($"{nameof(NVRManager)}: Create a new one");
+                configuration = NVRConfiguration.Create();
+            }
+        }
     }
-
 }

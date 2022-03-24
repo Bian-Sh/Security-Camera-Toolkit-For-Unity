@@ -15,7 +15,7 @@ namespace zFramework.Media
         /// </summary>
         public override bool IsLogin => null != loginHandle && (int)loginHandle > -1;
 
-        public HikvisonNVR(NVRInfomation data) : base(data)
+        public HikvisonNVR(NVRInformation data) : base(data)
         {
 
         }

@@ -10,14 +10,14 @@ namespace zFramework.Media
         /// <summary>
         /// NVR 实例绑定的 信息
         /// </summary>
-        public NVRInfomation data;
+        public NVRInformation data;
         protected object loginHandle;
         public abstract bool IsLogin{get;}
         /// <summary>
         /// NVR 下的所有监控
         /// </summary>
         public List<SecurityCamera> cameras;
-        public NVR(NVRInfomation data)
+        public NVR(NVRInformation data)
         {
             this.data = data;
             cameras = new List<SecurityCamera>();

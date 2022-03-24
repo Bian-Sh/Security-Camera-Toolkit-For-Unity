@@ -61,7 +61,7 @@ namespace zFramework.Media
         /// 必须先初始化 SDK 才能登录
         /// </summary>
         /// <param name="data"></param>
-        public static object Login(NVRInfomation data)
+        public static object Login(NVRInformation data)
         {
             if (!GetLoginHandle(data, out object handle))
             {
@@ -101,7 +101,7 @@ namespace zFramework.Media
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool GetLoginHandle(NVRInfomation data, out object handle)
+        public static bool GetLoginHandle(NVRInformation data, out object handle)
         {
             if (loginHandles.TryGetValue(data.type, out var handles))
             {
@@ -140,7 +140,7 @@ namespace zFramework.Media
         }
 
         public static bool IsInit(SDK type) => loginHandles.ContainsKey(type);
-        public static bool IsLogin(NVRInfomation nvrdata) => loginHandles.ContainsKey(nvrdata.type) && loginHandles[nvrdata.type].ContainsKey(nvrdata.host);
+        public static bool IsLogin(NVRInformation nvrdata) => loginHandles.ContainsKey(nvrdata.type) && loginHandles[nvrdata.type].ContainsKey(nvrdata.host);
         #endregion
 
         #region Logout
@@ -199,7 +199,7 @@ namespace zFramework.Media
         /// 登出 NVR 或者监控设备
         /// </summary>
         /// <param name="data">指定设备信息</param>
-        public static void Logout(NVRInfomation data)
+        public static void Logout(NVRInformation data)
         {
             if (loginHandles.TryGetValue(data.type, out var handles))
             {

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace zFramework.Media
 {
     [Serializable]
-    public struct NVRInfomation
+    public struct NVRInformation
     {
         /// <summary>
         /// NVR 主机地址，结构必须是 ip:port ,形如 127.0.0.1:8083 
