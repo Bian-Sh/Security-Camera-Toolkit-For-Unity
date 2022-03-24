@@ -132,7 +132,7 @@ namespace zFramework.Media
                     {
                         unsafe
                         {
-                            fixed (void* buffer = frame.Buffer2)
+                            fixed (void* buffer = frame.Buffer)
                             {
                                 var src = new IntPtr(buffer);
                                 int lumaSize = lumaWidth * lumaHeight;

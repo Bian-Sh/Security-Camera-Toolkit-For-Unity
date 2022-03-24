@@ -12,6 +12,9 @@ namespace zFramework.Media
         [Header("请指定 NVR 通道:")]
         public int channel;
         public STREAM steam_Type = STREAM.MAIN;
+        [Header("数据丢弃比率"), Tooltip("丢弃可以避免数据的对拷，减少渲染的帧数，提升APP整体性能")]
+        public float dataDropRate = 0.8f;
+
         public VideoRenderer monitor;
         CameraService player = null;
         public string Host { get => host; }
@@ -25,12 +28,13 @@ namespace zFramework.Media
             {
                 channel = this.channel,
                 host = this.host,
-                steamType = this.steam_Type
+                steamType = this.steam_Type,
+                dataDropRate=this.dataDropRate
             };
             switch (sdk)
             {
                 case SDK.HK:
-                    player = new HKCameraPlayer(info);
+                    player = new HKService(info);
                     break;
                 case SDK.YS:
                     break;

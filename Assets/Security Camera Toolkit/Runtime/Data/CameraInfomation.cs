@@ -13,5 +13,6 @@ public struct CameraInfomation
         // 注意监控的 通道取值范围会因各个厂商而异
         public int channel;
         public STREAM steamType;
+        public float dataDropRate ;
     }
 }

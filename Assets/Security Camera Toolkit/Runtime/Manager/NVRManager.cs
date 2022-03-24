@@ -19,8 +19,7 @@ namespace zFramework.Media
     {
         [SerializeField] SDKInitMode m_SDKInitMode = SDKInitMode.Awake;
         [Range(0.5f, 1.0f)]
-        [Header("数据丢弃比率"),Tooltip("丢弃可以避免数据的对拷，减少渲染的帧数，提升APP整体性能")]
-        public float dataDropRate = 0.8f;
+
         public NVRConfiguration configuration;
 
 

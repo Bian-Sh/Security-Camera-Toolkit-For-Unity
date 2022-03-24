@@ -26,8 +26,7 @@ namespace zFramework.Media
         /// <summary>
         /// Raw storage buffer
         /// </summary>
-        IntPtr Buffer { get; set; }
-        byte[] Buffer2 { get; set; }
+        byte[] Buffer { get; set; }
     }
 
     /// <summary>
@@ -48,8 +47,7 @@ namespace zFramework.Media
         /// <summary>
         /// Raw byte buffer containing the frame data.
         /// </summary>
-        public IntPtr Buffer { get; set; }
-        public byte[] Buffer2 { get; set; }
+        public byte[] Buffer { get; set; }
     }
 
     /// <summary>
@@ -206,7 +204,7 @@ namespace zFramework.Media
             {
                 // Copy the new frame to its storage
                 //storage.Buffer = frame.buffer;
-                storage.Buffer2 = frame.buffer2;
+                storage.Buffer = frame.buffer2;
                 storage.Width = frame.width;
                 storage.Height = frame.height;
 

@@ -8,7 +8,7 @@ using static zFramework.Media.DHPlaySDK;
 
 namespace zFramework.Media
 {
-    public class HKCameraPlayer : CameraService
+    public class HKService : CameraService
     {
         //loginHandle 海康是 int 类型 ，小于 -1 代表未成功登录
 
@@ -95,11 +95,11 @@ namespace zFramework.Media
             {
                 if (!DHPlaySDK.PLAY_InputData(lPort, pBuffer, dwBufSize))
                 {
-                    Debug.LogWarning($"{nameof(HKCameraPlayer)}: 播放库数据装载失败 errorcode = {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.LogWarning($"{nameof(HKService)}: 播放库数据装载失败 errorcode = {DHPlaySDK.PLAY_GetLastErrorEx()}");
                 }
             }
         }
-        public HKCameraPlayer(CameraInfomation info) : base(info)
+        public HKService(CameraInfomation info) : base(info)
         {
         }
         byte[] buffer;
@@ -135,7 +135,7 @@ namespace zFramework.Media
                 var temp = realHandle; //避免多次访问 SDK 
                 realHandle = -1;
                 var result = CHCNetSDK.NET_DVR_StopRealPlay(temp);
-                Debug.Log($"{nameof(HKCameraPlayer)}: 停止实时播放{(result ? "成功" : "失败")}");
+                Debug.Log($"{nameof(HKService)}: 停止实时播放{(result ? "成功" : "失败")}");
             }
             base.StopPlay();
         }
