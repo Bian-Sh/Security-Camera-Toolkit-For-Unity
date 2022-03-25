@@ -1,4 +1,4 @@
-using Hikvision;
+ï»¿using Hikvision;
 using System.Threading.Tasks;
 using UnityEngine;
 namespace zFramework.Media
@@ -6,12 +6,12 @@ namespace zFramework.Media
     public class HikvisonNVR : NVR
     {
         /// <summary>
-        /// ÓÉÓÚSDKµÄ³õÊ¼»¯Ö»ĞèÒªÓĞÒ»´Î£¬¹Ê¶øÊ¹ÓÃ¾²Ì¬ÊôĞÔ
-        /// <br>Í¬Ê±£¬Ò²ÒòÎª¾²Ì¬¸ÄÊôĞÔ²»ÄÜÊÕÁ²µ½»ùÀàÁË</br>
+        /// ç”±äºSDKçš„åˆå§‹åŒ–åªéœ€è¦æœ‰ä¸€æ¬¡ï¼Œæ•…è€Œä½¿ç”¨é™æ€å±æ€§
+        /// <br>åŒæ—¶ï¼Œä¹Ÿå› ä¸ºé™æ€æ”¹å±æ€§ä¸èƒ½æ”¶æ•›åˆ°åŸºç±»äº†</br>
         /// </summary>
         public static bool IsSDKInit { get; private set; } = false;
         /// <summary>
-        /// ¶ÏÑÔ NVR ÊÇ·ñµÇÂ¼
+        /// æ–­è¨€ NVR æ˜¯å¦ç™»å½•
         /// </summary>
         public override bool IsLogin => null != loginHandle && (int)loginHandle > -1;
 
@@ -21,18 +21,18 @@ namespace zFramework.Media
         }
 
         /// <summary>
-        /// ´Ë·½·¨ĞèÒªÔÚÖ÷Ïß³ÌÊ¹ÓÃ£¬ÎªÉ¶£¿ÒòÎªÒ»°ãµ÷ÓÃÕâ¸öAPIÊÇ³ÌĞòÍË³öÊ±£¬×èÈûµ÷ÓÃÄÜ±ÜÃâ³ÌĞòÍË³öÒì³£
+        /// æ­¤æ–¹æ³•éœ€è¦åœ¨ä¸»çº¿ç¨‹ä½¿ç”¨ï¼Œä¸ºå•¥ï¼Ÿå› ä¸ºä¸€èˆ¬è°ƒç”¨è¿™ä¸ªAPIæ˜¯ç¨‹åºé€€å‡ºæ—¶ï¼Œé˜»å¡è°ƒç”¨èƒ½é¿å…ç¨‹åºé€€å‡ºå¼‚å¸¸
         /// </summary>
         public override void CleanUp()
         {
-            // todo £º ²»ÄÜÕâÑùĞ´£¬Òª°Ñ init ºÍ clean ·Ö±ğĞ´µ½Ê×´Î login ºÍ logout ×îºÃÓÃÉÏ Òì²½£¬±ÜÃâ¿¨¶Ù
+            // todo ï¼š ä¸èƒ½è¿™æ ·å†™ï¼Œè¦æŠŠ init å’Œ clean åˆ†åˆ«å†™åˆ°é¦–æ¬¡ login å’Œ æœ€åä¸€ä¸ª NVR logout æœ€å¥½ç”¨ä¸Š å¼‚æ­¥ï¼Œé¿å…å¡é¡¿
             Logout();
             if (IsSDKInit)
             {
                 IsSDKInit = !CHCNetSDK.NET_DVR_Cleanup();
                 if (IsSDKInit)
                 {
-                    Debug.Log($"{nameof(HikvisonNVR)}: ÇåÀí SDK ³öÏÖÒì³£");
+                    Debug.Log($"{nameof(HikvisonNVR)}: æ¸…ç† SDK å‡ºç°å¼‚å¸¸");
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace zFramework.Media
                 IsSDKInit = CHCNetSDK.NET_DVR_Init();
                 if (!IsSDKInit)
                 {
-                    Debug.LogError($"{nameof(HikvisonNVR)}: SDK ³õÊ¼»¯Ê§°Ü");
+                    Debug.LogError($"{nameof(HikvisonNVR)}: SDK åˆå§‹åŒ–å¤±è´¥");
                 }
             }
         }
@@ -61,18 +61,18 @@ namespace zFramework.Media
                     loginHandle = CHCNetSDK.NET_DVR_Login_V30(data.Ip, (int)data.Port, data.userName, data.password, ref DeviceInfo);
                     if ((int)loginHandle != -1)
                     {
-                        base.Login(); // Ïò¹ÒÔØµÄ¼à¿Ø·¢ËÍ µÇÂ¼×´Ì¬ , ×¢Òâ£¬´Ë¶¯×÷ÔÚ·ÇUnityÖ÷Ïß³ÌÖĞ½øĞĞ
-                        Debug.Log($"{data.type} - {data.ActiveHost} NVR µÇÂ¼³É¹¦£º{loginHandle}");
+                        base.Login(); // å‘æŒ‚è½½çš„ç›‘æ§å‘é€ ç™»å½•çŠ¶æ€ , æ³¨æ„ï¼Œæ­¤åŠ¨ä½œåœ¨éUnityä¸»çº¿ç¨‹ä¸­è¿›è¡Œ
+                        Debug.Log($"{data.type} - {data.ActiveHost} NVR ç™»å½•æˆåŠŸï¼š{loginHandle}");
                     }
                     else
                     {
-                        Debug.Log($"{data.type} - {data.ActiveHost} NVR µÇÂ¼Ê§°Ü,ErrorCode = {CHCNetSDK.NET_DVR_GetLastError()}");
+                        Debug.Log($"{data.type} - {data.ActiveHost} NVR ç™»å½•å¤±è´¥,ErrorCode = {CHCNetSDK.NET_DVR_GetLastError()}");
                     }
                 });
             }
             else
             {
-                Debug.Log($"{data.type} - {data.ActiveHost} SDK ÒÑ¾­µÇÂ¼");
+                Debug.Log($"{data.type} - {data.ActiveHost} SDK å·²ç»ç™»å½•");
             }
         }
 
@@ -86,11 +86,11 @@ namespace zFramework.Media
                         var temp = CHCNetSDK.NET_DVR_Logout_V30((int)loginHandle);
                         if (temp)
                         {
-                            Debug.Log($"{nameof(SDKManager)}: {data.ActiveHost} - {loginHandle} µÇ³ö³É¹¦");
+                            Debug.Log($"{nameof(SDKManager)}: {data.ActiveHost} - {loginHandle} ç™»å‡ºæˆåŠŸ");
                         }
                         else
                         {
-                            Debug.LogWarning($"{nameof(SDKManager)}: {data.ActiveHost} - {loginHandle} µÇ³öÊ§°Ü");
+                            Debug.LogWarning($"{nameof(SDKManager)}: {data.ActiveHost} - {loginHandle} ç™»å‡ºå¤±è´¥");
                         }
                     });
             }
