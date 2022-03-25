@@ -16,12 +16,12 @@ namespace zFramework.Media
         /// <summary>
         /// Frame width, in pixels.
         /// </summary>
-        uint Width { get; set; }
+        int Width { get; set; }
 
         /// <summary>
         /// Frame height, in pixels.
         /// </summary>
-        uint Height { get; set; }
+        int Height { get; set; }
 
         /// <summary>
         /// Raw storage buffer
@@ -49,12 +49,12 @@ namespace zFramework.Media
         /// <summary>
         /// Frame width, in pixels.
         /// </summary>
-        public uint Width { get; set; }
+        public int Width { get; set; }
 
         /// <summary>
         /// Frame height, in pixels.
         /// </summary>
-        public uint Height { get; set; }
+        public int Height { get; set; }
 
         /// <summary>
         /// Raw byte buffer containing the frame data.
@@ -104,14 +104,46 @@ namespace zFramework.Media
     public class VideoFrameQueue<T> : IVideoFrameQueue where T : class, IVideoFrameStorage, new()
     {
         /// <inheritdoc/>
-        public float QueuedFramesPerSecond => 1000f / _queuedFrameTimeAverage.Average;
+        public float QueuedFramesPerSecond
+        {
+            get
+            {
+                var value = 1000f / _queuedFrameTimeAverage.Average;
+                if (float.IsInfinity(value))
+                {
+                    value = 0;
+                }
+                return value;
+            }
+        }
 
         /// <inheritdoc/>
-        public float DequeuedFramesPerSecond => 1000f / _dequeuedFrameTimeAverage.Average;
+        public float DequeuedFramesPerSecond
+        {
+            get
+            {
+                var value = 1000f / _dequeuedFrameTimeAverage.Average;
+                if (float.IsInfinity(value))
+                {
+                    value = 0;
+                }
+                return value;
+            }
+        }
 
         /// <inheritdoc/>
-        public float DroppedFramesPerSecond => 1000f / _droppedFrameTimeAverage.Average;
-
+        public float DroppedFramesPerSecond
+        {
+            get
+            {
+                var value = 1000f / _droppedFrameTimeAverage.Average;
+                if (float.IsInfinity(value))
+                {
+                    value = 0;
+                }
+                return value;
+            }
+        }
         /// <summary>
         /// Queue of frames pending delivery to sink.
         /// </summary>
@@ -202,6 +234,14 @@ namespace zFramework.Media
             {
                 state = false;
                 double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+
+                //如果这一帧要丢弃，那也得被统计到 推流总帧率里面
+                //不要写 if 语句外，否则不丢弃帧的情况下会统计两次
+                float queuedDt = (float)(curTime - _lastQueuedTimeMs);
+                _queuedFrameTimeAverage.Push(queuedDt);
+                _lastQueuedTimeMs = curTime;
+
+                // 数据发生丢弃，统计丢弃帧率
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _droppedFrameTimeAverage.Push(droppedDt);
                 _lastDroppedTimeMs = curTime;
@@ -216,7 +256,7 @@ namespace zFramework.Media
         /// </summary>
         /// <param name="frame">The video frame to enqueue</param>
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
-        public void Enqueue(I420AVideoFrame frame)
+        public void Enqueue(I420VideoFrame frame)
         {
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
@@ -232,10 +272,7 @@ namespace zFramework.Media
                 storage = new T();
             }
             // Copy the new frame to its storage
-            //storage.Buffer = frame.buffer;
-            storage.Width = frame.width;
-            storage.Height = frame.height;
-            frame.CopyTo(storage);
+            frame.ApplyTo(storage);
             // Enqueue for later delivery
             _frameQueue.Enqueue(storage);
         }

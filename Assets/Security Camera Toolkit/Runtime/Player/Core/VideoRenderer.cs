@@ -15,7 +15,6 @@ namespace zFramework.Media
     [RequireComponent(typeof(RawImage))]
     public class VideoRenderer : MonoBehaviour
     {
-
         #region Show In Inspector
         [Header("开启统计："), Tooltip(aboutstatistics)]
         public bool enableStatistics = true;
@@ -33,14 +32,9 @@ namespace zFramework.Media
         protected void OnDisable() => CreateEmptyVideoTextures();
         void Start()
         {
-
             monitor.material = new Material(monitor.material);
             videoMaterial = monitor.materialForRendering;
-
             CreateEmptyVideoTextures();
-            // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
-            // when Unity is running at 60 FPS.
-            frameDuration = Mathf.Max(0f, 1f / Mathf.Max(15, framerate) - 0.003f);
         }
         void Update() => TryProcessI420VideoFrame();
 
@@ -54,11 +48,12 @@ namespace zFramework.Media
         public void StopRendering(IVideoSource source)
         {
             source.OnVideoFrameReady -= I420AVideoFrameReady;
-            _i420aFrameQueue?.Clear();
+            source.OnInterruptedSignal -= OnInterruptedSignal;
+            videoFrameQueue?.Clear();
             CreateEmptyVideoTextures();
         }
 
-        public void PauseRendering() => _i420aFrameQueue?.Clear();
+        public void PauseRendering() => videoFrameQueue?.Clear();
 
 
         /// <summary>
@@ -66,12 +61,16 @@ namespace zFramework.Media
         /// </summary>
         public void StartRendering(IVideoSource source)
         {
-            _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(maxFrameQueueSize);
+            videoFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(maxFrameQueueSize);
             source.OnVideoFrameReady += I420AVideoFrameReady;
+            source.OnInterruptedSignal += OnInterruptedSignal;
         }
+
         #endregion
 
         #region Assistant Fuction
+
+        private bool OnInterruptedSignal() =>!videoFrameQueue.CanEnqueue;
         private void CreateEmptyVideoTextures()
         {
             _textureY = _textureU = _textureV = null;
@@ -82,21 +81,23 @@ namespace zFramework.Media
                 videoMaterial.SetTexture(attr_v, _textureV);
             }
         }
-        protected void I420AVideoFrameReady(I420AVideoFrame frame)
+        protected void I420AVideoFrameReady(I420VideoFrame frame)
         {
             // 视频数据的采集是在非 Unity 主线程，为了渲染到 UI ，先进栈等待主线程处理
-            if (_i420aFrameQueue.CanEnqueue)
-            {
-                _i420aFrameQueue.Enqueue(frame);
-            }
+            videoFrameQueue.Enqueue(frame);
         }
 
         private void TryProcessI420VideoFrame()
         {
-#if UNITY_EDITOR
-            frameDuration = Mathf.Max(0f, 1f / Mathf.Max(15, framerate) - 0.003f);
-#endif
-            if (_i420aFrameQueue != null)
+            // 计算取画面帧的间隔，想流畅就接近推流速率，比如推流 25 fps，你就设置25 左右
+            // 反之，设小的话，推流时就会丢弃帧数据，显得不流畅，但是渲染减少，内存对拷减少，进而性能更好些
+            if (preFrameRate != framerate)
+            {
+                preFrameRate = framerate;
+                frameDuration = Mathf.Max(0f, 1f / Mathf.Max(15, framerate) - 0.003f);
+            }
+
+            if (videoFrameQueue != null)
             {
                 var curTime = Time.time;
                 if (curTime - lastUpdateTime >= frameDuration)
@@ -109,7 +110,7 @@ namespace zFramework.Media
 
             void DoProcess()
             {
-                if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
+                if (videoFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
                 {
                     int lumaWidth = (int)frame.Width;
                     int lumaHeight = (int)frame.Height;
@@ -147,7 +148,7 @@ namespace zFramework.Media
                     }
 
                     // Recycle the video frame packet for a later frame
-                    _i420aFrameQueue.RecycleStorage(frame);
+                    videoFrameQueue.RecycleStorage(frame);
                 }
             }
         }
@@ -159,7 +160,7 @@ namespace zFramework.Media
                 // Share our stats values, if possible.
                 using (var profileScope = displayStatsMarker.Auto())
                 {
-                    IVideoFrameQueue stats = (IVideoFrameQueue)_i420aFrameQueue;
+                    IVideoFrameQueue stats = (IVideoFrameQueue)videoFrameQueue;
                     var frameLoad = stats.QueuedFramesPerSecond.ToString("F2");
                     var frameRender = stats.DequeuedFramesPerSecond.ToString("F2");
                     var frameDrop = stats.DroppedFramesPerSecond.ToString("F2");
@@ -176,7 +177,7 @@ namespace zFramework.Media
         /// <summary>
         /// 视频帧队列
         /// </summary>
-        private VideoFrameQueue<I420AVideoFrameStorage> _i420aFrameQueue = null;
+        private VideoFrameQueue<I420AVideoFrameStorage> videoFrameQueue = null;
         private float frameDuration;
         private float lastUpdateTime;
 
@@ -192,7 +193,7 @@ namespace zFramework.Media
         /// YUV Shader 接受的三个通道的属性
         /// </summary>
         private string attr_y = "_YTexture", attr_u = "_UTexture", attr_v = "_VTexture";
-
+        private int preFrameRate = 0;
         [Serializable]
         public class VideoRendererEvent : UnityEvent<string, string, string> { }
         #endregion

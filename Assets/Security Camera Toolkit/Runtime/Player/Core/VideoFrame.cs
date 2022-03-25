@@ -8,77 +8,80 @@ namespace zFramework.Media
     /// Single video frame encoded in I420A format , YUV Raw data
     /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
     /// </summary>
-    public ref struct I420AVideoFrame
+    public ref struct I420VideoFrame
     {
         /// <summary>
         /// Frame width, in pixels.
         /// </summary>
-        public uint width;
+        public int width;
 
         /// <summary>
         /// Frame height, in pixels.
         /// </summary>
-        public uint height;
+        public int height;
 
-        /// <summary>
-        /// 帧数据
-        /// </summary>
-        public IntPtr buffer;
-        public IntPtr buffer_Y;
-        public IntPtr buffer_U;
-        public IntPtr buffer_V;
+        private byte[] buffer_Y;
+        private byte[] buffer_U;
+        private byte[] buffer_V;
+        private int lumasize;
+        private int chromasize;
 
-        public void CopyTo<T>(T storage) where T : class, IVideoFrameStorage, new()
+        private I420VideoFrame(int width, int height)
         {
-            // YUV 数据长度分别是 size ，size/4 , size/4
-            var lumasize = width * height;  // luma ：亮度
-            var chromasize = (width / 2) * (height / 2); // chroma : 色度
+            this.width = width;
+            this.height = height;
+            lumasize = width * height;
+            chromasize = (width / 2) * (height / 2); //方便理解，不写成 lumasize/4
+            buffer_Y = new byte[lumasize];
+            buffer_U = new byte[chromasize];
+            buffer_V = new byte[chromasize];
+        }
+        public I420VideoFrame(int width, int height, IntPtr yuv) : this(width, height) => Copy(yuv);
+        public I420VideoFrame(int width, int height, IntPtr src_y, IntPtr src_u, IntPtr src_v) : this(width, height) => Copy(src_y, src_u, src_v);
 
-            storage.Buffer_Y = new byte[lumasize];
-            storage.Buffer_U = new byte[chromasize];
-            storage.Buffer_V = new byte[chromasize];
 
-            //提供 二选一 的储值方案，如果 buffer 无效则处理 YUV 分片数据
-            //宇视播放库返回的是 Y、U、V  3个 IntPtr 类型的分片数据
-            //大华播放库返回的是 YUV IntPtr 类型的打包数据
-            if (buffer != default)
+        //大华播放库返回的是 YUV IntPtr 类型的打包数据,需要拆分开来
+        private void Copy(IntPtr yuv)
+        {
+            unsafe
             {
-                unsafe
+                fixed (void* ptr_y = buffer_Y)
+                fixed (void* ptr_u = buffer_U)
+                fixed (void* ptr_v = buffer_V)
                 {
-                    fixed (void* ptr_y = storage.Buffer_Y)
-                    fixed (void* ptr_u = storage.Buffer_U)
-                    fixed (void* ptr_v = storage.Buffer_V)
-                    {
-                        Buffer.MemoryCopy((void*)buffer, ptr_y, lumasize, lumasize);
-                        buffer += (int)lumasize;
-                        Buffer.MemoryCopy((void*)buffer, ptr_u, chromasize, chromasize);
-                        buffer += (int)chromasize;
-                        Buffer.MemoryCopy((void*)buffer, ptr_v, chromasize, chromasize);
-                    }
-                }
-            }
-            else
-            {
-                unsafe
-                {
-                    fixed (void* ptr_y = storage.Buffer_Y)
-                    fixed (void* ptr_u = storage.Buffer_U)
-                    fixed (void* ptr_v = storage.Buffer_V)
-                    {
-                        Buffer.MemoryCopy((void*)buffer_Y, ptr_y, lumasize, lumasize);
-                        Buffer.MemoryCopy((void*)buffer_U, ptr_u, chromasize, chromasize);
-                        Buffer.MemoryCopy((void*)buffer_V, ptr_v, chromasize, chromasize);
-                    }
+                    Buffer.MemoryCopy((void*)yuv, ptr_y, lumasize, lumasize);
+                    yuv += lumasize;
+                    Buffer.MemoryCopy((void*)yuv, ptr_u, chromasize, chromasize);
+                    yuv += chromasize;
+                    Buffer.MemoryCopy((void*)yuv, ptr_v, chromasize, chromasize);
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Delegate used for events when an I420-encoded video frame has been produced
-    /// and is ready for consumption.
-    /// </summary>
-    /// <param name="frame">The newly available I420-encoded video frame.</param>
-    public delegate void I420AVideoFrameDelegate(I420AVideoFrame frame);
+        //宇视播放库返回的是 Y、U、V  3个 IntPtr 类型的分片数据
+        private void Copy(IntPtr scr_y, IntPtr scr_u, IntPtr scr_v)
+        {
+            unsafe
+            {
+                fixed (void* ptr_y = buffer_Y)
+                fixed (void* ptr_u = buffer_U)
+                fixed (void* ptr_v = buffer_V)
+                {
+                    Buffer.MemoryCopy((void*)scr_y, ptr_y, lumasize, lumasize);
+                    Buffer.MemoryCopy((void*)scr_u, ptr_u, chromasize, chromasize);
+                    Buffer.MemoryCopy((void*)scr_v, ptr_v, chromasize, chromasize);
+                }
+            }
+        }
+
+        public void ApplyTo<T>(T target) where T : class, IVideoFrameStorage, new()
+        {
+            target.Height = height;
+            target.Width = width;
+            target.Buffer_Y = buffer_Y;
+            target.Buffer_U = buffer_U;
+            target.Buffer_V = buffer_V;
+        }
+    }
 
 }

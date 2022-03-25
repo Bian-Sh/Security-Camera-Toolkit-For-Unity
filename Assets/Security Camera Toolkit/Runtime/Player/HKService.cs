@@ -61,7 +61,7 @@ namespace zFramework.Media
                     return;
                 }
 
-                if (!DHPlaySDK.PLAY_SetStreamOpenMode(lPort, IsRealPlaying ? DHPlaySDK.STREAME_REALTIME : DHPlaySDK.STREAME_FILE ))
+                if (!DHPlaySDK.PLAY_SetStreamOpenMode(lPort, IsRealPlaying ? DHPlaySDK.STREAME_REALTIME : DHPlaySDK.STREAME_FILE))
                 {
                     Debug.LogWarning($"设置实时流播放模式失败：{DHPlaySDK.PLAY_GetLastErrorEx()}");
                     return;
@@ -106,13 +106,12 @@ namespace zFramework.Media
         {
             if (IsRealPlaying && !isPause && pFrameInfo.nType == 3)
             {
-                var frame = new I420AVideoFrame
+                // 先访问 VideoRenderer 是否视频帧队列已满，满了就把当前推进来的数据丢弃
+                if (!frameBlocked())
                 {
-                    width = (uint)pFrameInfo.nWidth,
-                    height = (uint)pFrameInfo.nHeight,
-                    buffer = pBuf
-                };
-                fremeReady(frame);
+                    var frame = new I420VideoFrame(pFrameInfo.nWidth, pFrameInfo.nHeight, pBuf);
+                    frameReady(frame);
+                }
             }
         }
 

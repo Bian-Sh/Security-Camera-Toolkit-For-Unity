@@ -12,8 +12,10 @@ namespace zFramework.Media
 
         //暂停
         protected bool isPause = false;
-        object eventlock = new object();
+        object eventlocka = new object();
+        object eventlockb = new object();
         protected bool isVideoRendererReady = false;
+        protected bool isFrameBlockedSignalReady = false;
         /// <summary>
         /// 视频帧广播事件
         /// </summary>
@@ -21,22 +23,46 @@ namespace zFramework.Media
         {
             add
             {
-                lock (eventlock)
+                lock (eventlocka)
                 {
-                    fremeReady += value;
+                    frameReady += value;
                     isVideoRendererReady = true;
                 }
             }
             remove
             {
-                lock (eventlock)
+                lock (eventlocka)
                 {
-                    fremeReady -= value;
-                    isVideoRendererReady = fremeReady != null;
+                    frameReady -= value;
+                    isVideoRendererReady = frameReady != null;
                 }
             }
         }
-        protected I420AVideoFrameDelegate fremeReady;
+        protected I420AVideoFrameDelegate frameReady;
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public event ProcessInterruptSignal OnInterruptedSignal
+        {
+            add
+            {
+                lock (eventlockb)
+                {
+                    frameBlocked += value;
+                    isFrameBlockedSignalReady = true;
+                }
+            }
+            remove
+            {
+                lock (eventlockb)
+                {
+                    frameBlocked -= value;
+                    isFrameBlockedSignalReady = frameBlocked != null;
+                }
+            }
+        }
+
+        protected ProcessInterruptSignal frameBlocked;
 
         public CameraService(CameraInfomation info)
         {
@@ -55,9 +81,9 @@ namespace zFramework.Media
         /// 暂停播放
         /// </summary>
         /// <remarks>不建议调用 DHPlaySDK.PLAY_Pause ,因为画面会一直延迟下去</remarks>
-        public virtual void Pause() 
+        public virtual void Pause()
         {
-            if (IsRealPlaying&&!isPause)
+            if (IsRealPlaying && !isPause)
             {
                 isPause = true;
             }
@@ -66,11 +92,11 @@ namespace zFramework.Media
         /// <summary>
         /// 恢复播放
         /// </summary>
-        public virtual void Resume() 
+        public virtual void Resume()
         {
-            if (IsRealPlaying&&isPause)
+            if (IsRealPlaying && isPause)
             {
-                isPause = false; 
+                isPause = false;
             }
         }
 
@@ -82,4 +108,11 @@ namespace zFramework.Media
             isPause = false;
         }
     }
+    /// <summary>
+    /// Delegate used for events when an I420-encoded video frame has been produced
+    /// and is ready for consumption.
+    /// </summary>
+    /// <param name="frame">The newly available I420-encoded video frame.</param>
+    public delegate void I420AVideoFrameDelegate(I420VideoFrame frame);
+    public delegate bool ProcessInterruptSignal();
 }
