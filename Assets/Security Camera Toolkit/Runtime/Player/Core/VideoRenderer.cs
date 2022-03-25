@@ -85,7 +85,10 @@ namespace zFramework.Media
         protected void I420AVideoFrameReady(I420AVideoFrame frame)
         {
             // 视频数据的采集是在非 Unity 主线程，为了渲染到 UI ，先进栈等待主线程处理
-            _i420aFrameQueue.Enqueue(frame);
+            if (_i420aFrameQueue.CanEnqueue)
+            {
+                _i420aFrameQueue.Enqueue(frame);
+            }
         }
 
         private void TryProcessI420VideoFrame()
@@ -130,20 +133,9 @@ namespace zFramework.Media
 
                     using (var profileScope = loadTextureDataMarker.Auto())
                     {
-                        unsafe
-                        {
-                            fixed (void* buffer = frame.Buffer)
-                            {
-                                var src = new IntPtr(buffer);
-                                int lumaSize = lumaWidth * lumaHeight;
-                                _textureY.LoadRawTextureData(src, lumaSize);
-                                src += lumaSize;
-                                int chromaSize = chromaWidth * chromaHeight;
-                                _textureU.LoadRawTextureData(src, chromaSize);
-                                src += chromaSize;
-                                _textureV.LoadRawTextureData(src, chromaSize);
-                            }
-                        }
+                        _textureY.LoadRawTextureData(frame.Buffer_Y);
+                        _textureU.LoadRawTextureData(frame.Buffer_U);
+                        _textureV.LoadRawTextureData(frame.Buffer_V);
                     }
 
                     // Upload from system memory to GPU

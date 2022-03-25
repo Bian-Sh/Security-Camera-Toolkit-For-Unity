@@ -109,19 +109,11 @@ namespace zFramework.Media
 
             if (IsPlaying && !isPause && pFrameInfo.nType == 3)
             {
-                byte[] buffer = new byte[nSize];
-                unsafe
-                {
-                    fixed (void* ptr = buffer)
-                    {
-                        Buffer.MemoryCopy((void*)pBuf, ptr, nSize, nSize);
-                    }
-                }
                 var frame = new I420AVideoFrame
                 {
                     width = (uint)pFrameInfo.nWidth,
                     height = (uint)pFrameInfo.nHeight,
-                    buffer2 = buffer
+                    buffer = pBuf
                 };
                 fremeReady(frame);
             }

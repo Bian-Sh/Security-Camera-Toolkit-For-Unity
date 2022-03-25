@@ -27,10 +27,22 @@ namespace zFramework.Media
         /// Raw storage buffer
         /// </summary>
         byte[] Buffer { get; set; }
+        /// <summary>
+        /// storage Y panel buffer
+        /// </summary>
+        byte[] Buffer_Y { get; set; }
+        /// <summary>
+        /// storage Y panel buffer
+        /// </summary>
+        byte[] Buffer_U { get; set; }
+        /// <summary>
+        /// storage Y panel buffer
+        /// </summary>
+        byte[] Buffer_V { get; set; }
     }
 
     /// <summary>
-    /// Storage for a video frame encoded in I420+Alpha format.
+    /// Storage for a video frame encoded in I420  format.
     /// </summary>
     public class I420AVideoFrameStorage : IVideoFrameStorage
     {
@@ -47,7 +59,11 @@ namespace zFramework.Media
         /// <summary>
         /// Raw byte buffer containing the frame data.
         /// </summary>
+
         public byte[] Buffer { get; set; }
+        public byte[] Buffer_Y { get; set; }
+        public byte[] Buffer_U { get; set; }
+        public byte[] Buffer_V { get; set; }
     }
 
     /// <summary>
@@ -177,9 +193,26 @@ namespace zFramework.Media
             _stopwatch.Restart();
         }
 
+        public bool CanEnqueue => QueryQueueState();
+
+        private bool QueryQueueState()
+        {
+            bool state = true;
+            if (_frameQueue.Count >= _maxQueueLength)
+            {
+                state = false;
+                double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+                float droppedDt = (float)(curTime - _lastDroppedTimeMs);
+                _droppedFrameTimeAverage.Push(droppedDt);
+                _lastDroppedTimeMs = curTime;
+            }
+            return state;
+        }
+
+
         /// <summary>
         /// Enqueue a new video frame encoded in I420 format.
-        /// If the internal queue reached its maximum capacity, overwrite and reuse the early frame.
+        /// If the internal queue reached its maximum capacity,drop the current 
         /// </summary>
         /// <param name="frame">The video frame to enqueue</param>
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
@@ -190,29 +223,21 @@ namespace zFramework.Media
             // Always update queued time, which refers to calling Enqueue(), even
             // if the queue is full and the frame is dropped.
             float queuedDt = (float)(curTime - _lastQueuedTimeMs);
+            _queuedFrameTimeAverage.Push(queuedDt);
             _lastQueuedTimeMs = curTime;
 
             // Try to get some storage for that new frame
-            T storage = GetStorageFor();
-            if (storage == null)
+            if (!_unusedFramePool.TryPop(out T storage))
             {
-                float droppedDt = (float)(curTime - _lastDroppedTimeMs);
-                _lastDroppedTimeMs = curTime;
-                _droppedFrameTimeAverage.Push(droppedDt);
+                storage = new T();
             }
-            else
-            {
-                // Copy the new frame to its storage
-                //storage.Buffer = frame.buffer;
-                storage.Buffer = frame.buffer2;
-                storage.Width = frame.width;
-                storage.Height = frame.height;
-
-                // Enqueue for later delivery
-                _frameQueue.Enqueue(storage);
-                _queuedFrameTimeAverage.Push(queuedDt);
-                _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
-            }
+            // Copy the new frame to its storage
+            //storage.Buffer = frame.buffer;
+            storage.Width = frame.width;
+            storage.Height = frame.height;
+            frame.CopyTo(storage);
+            // Enqueue for later delivery
+            _frameQueue.Enqueue(storage);
         }
 
 
@@ -266,23 +291,5 @@ namespace zFramework.Media
             _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
         }
 
-        /// <summary>
-        /// Get some video frame storage for a frame of the given byte size.
-        /// </summary>
-        private T GetStorageFor()
-        {
-            if (_unusedFramePool.TryPop(out T storage))
-            {
-                return storage;
-            }
-
-            if (_frameQueue.Count >= _maxQueueLength)
-            {
-                // Too many frames in queue, drop the current one
-                return null;
-            }
-            var newStorage = new T();
-            return newStorage;
-        }
     }
 }
