@@ -16,13 +16,18 @@ namespace zFramework.Media
     public class VideoRenderer : MonoBehaviour
     {
         #region Show In Inspector
-        [Header("开启统计："), Tooltip(aboutstatistics)]
-        public bool enableStatistics = true;
+        [Header("渲染状态:"),SerializeField] 
+        private bool isRendering;
         [Header("绘制帧率："), Range(15, 60), Tooltip(aboutframrate)]
         public int framerate = 25;
         [Header("帧队列最大容量："), Range(2, 5), Tooltip(aboutQueueSize)]
         public int maxFrameQueueSize = 3;
-        [Header("帧数统计事件"), Tooltip(aboutevent)]
+
+        [Tooltip(aboutstatistics)]
+        public bool enableStatistics = true;
+        [SerializeField]
+        string frameLoad, frameRender, frameDrop;
+        [Space(8)]
         public VideoRendererEvent OnStatisticsReported = new VideoRendererEvent();
         #endregion
 
@@ -50,6 +55,7 @@ namespace zFramework.Media
             source.OnVideoFrameReady -= I420AVideoFrameReady;
             source.OnInterruptedSignal -= OnInterruptedSignal;
             videoFrameQueue?.Clear();
+            isRendering = false;
             CreateEmptyVideoTextures();
         }
 
@@ -64,13 +70,14 @@ namespace zFramework.Media
             videoFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(maxFrameQueueSize);
             source.OnVideoFrameReady += I420AVideoFrameReady;
             source.OnInterruptedSignal += OnInterruptedSignal;
+            isRendering = true;
         }
 
         #endregion
 
         #region Assistant Fuction
 
-        private bool OnInterruptedSignal() =>!videoFrameQueue.CanEnqueue;
+        private bool OnInterruptedSignal() => !videoFrameQueue.CanEnqueue;
         private void CreateEmptyVideoTextures()
         {
             _textureY = _textureU = _textureV = null;
@@ -112,8 +119,11 @@ namespace zFramework.Media
             {
                 if (videoFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
                 {
-                    int lumaWidth = (int)frame.Width;
-                    int lumaHeight = (int)frame.Height;
+                    lumaWidth = frame.Width;
+                    lumaHeight = frame.Height;
+
+                    frameDataSize = frame.GetSize();
+
                     if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
                     {
                         _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.Alpha8, mipChain: false);
@@ -161,9 +171,9 @@ namespace zFramework.Media
                 using (var profileScope = displayStatsMarker.Auto())
                 {
                     IVideoFrameQueue stats = (IVideoFrameQueue)videoFrameQueue;
-                    var frameLoad = stats.QueuedFramesPerSecond.ToString("F2");
-                    var frameRender = stats.DequeuedFramesPerSecond.ToString("F2");
-                    var frameDrop = stats.DroppedFramesPerSecond.ToString("F2");
+                    frameLoad = stats.QueuedFramesPerSecond.ToString("F2");
+                    frameRender = stats.DequeuedFramesPerSecond.ToString("F2");
+                    frameDrop = stats.DroppedFramesPerSecond.ToString("F2");
                     OnStatisticsReported.Invoke(frameLoad, frameRender, frameDrop);
                 }
             }
@@ -194,14 +204,16 @@ namespace zFramework.Media
         /// </summary>
         private string attr_y = "_YTexture", attr_u = "_UTexture", attr_v = "_VTexture";
         private int preFrameRate = 0;
+        [SerializeField] private int lumaWidth;
+        [SerializeField] private int lumaHeight;
+        [SerializeField] private long frameDataSize;
         [Serializable]
         public class VideoRendererEvent : UnityEvent<string, string, string> { }
         #endregion
-        #region Tooltips
-        const string aboutstatistics = "开启后 OnStatisticsReported 事件才会进行分发，反之不会";
-        const string aboutframrate = "为快速交换数据稍微设置大一些，目前设小会导致播放画面滞后，推荐值大于 SDK 推流帧率即可";
-        const string aboutQueueSize = "一帧视频数据可观，减少队列容量，避免内存高涨";
-        const string aboutevent = "返回值分别为加载 、渲染、丢弃帧数的平均值，对于监控来说，渲染15帧就已经很流畅了";
+        #region tooltips
+        const string aboutframrate = "为快速交换数据稍微设置大一些，推荐值大于 SDK 推流帧率即可";
+        const string aboutstatistics = "开启后 OnStatisticsReported 事件才会进行分发，反之不会, 影响性能，建议关闭";
+        const string aboutQueueSize = "一帧视频数据可观，减少队列容量，避免内存高涨，仅当停止播放时可调节";
         #endregion
     }
 }

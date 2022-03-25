@@ -1909,9 +1909,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15a3fca5a10e54785bbdbaed1cfd59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableStatistics: 1
-  framerate: 50
+  isRendering: 0
+  framerate: 47
   maxFrameQueueSize: 3
+  enableStatistics: 1
+  frameLoad: 
+  frameRender: 
+  frameDrop: 
   OnStatisticsReported:
     m_PersistentCalls:
       m_Calls:
@@ -1927,6 +1931,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  lumaWidth: 0
+  lumaHeight: 0
+  frameDataSize: 0
 --- !u!114 &510942894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2761,9 +2768,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15a3fca5a10e54785bbdbaed1cfd59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableStatistics: 1
+  isRendering: 0
   framerate: 50
-  maxFrameQueueSize: 5
+  maxFrameQueueSize: 3
+  enableStatistics: 1
+  frameLoad: 
+  frameRender: 
+  frameDrop: 
   OnStatisticsReported:
     m_PersistentCalls:
       m_Calls:
@@ -2779,6 +2790,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  lumaWidth: 0
+  lumaHeight: 0
+  frameDataSize: 0
 --- !u!114 &770311534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4674,9 +4688,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15a3fca5a10e54785bbdbaed1cfd59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableStatistics: 1
+  isRendering: 0
   framerate: 50
   maxFrameQueueSize: 5
+  enableStatistics: 1
+  frameLoad: 
+  frameRender: 
+  frameDrop: 
   OnStatisticsReported:
     m_PersistentCalls:
       m_Calls:
@@ -4692,6 +4710,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  lumaWidth: 0
+  lumaHeight: 0
+  frameDataSize: 0
 --- !u!114 &1371905855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4868,7 +4889,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SDKInitMode: 1
-  dataDropRate: 0.8
   configuration: {fileID: 11400000, guid: e3ddb704d85db304981ff1ea3f185c85, type: 2}
 --- !u!4 &1505640710
 Transform:

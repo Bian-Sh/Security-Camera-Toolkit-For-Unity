@@ -15,7 +15,6 @@ public class NVRManagerEditor : Editor
     private void OnEnable()
     {
         config = serializedObject.FindProperty(ConfigName);
-        LoadNVRConfiguration();
     }
 
     public override void OnInspectorGUI()
@@ -56,7 +55,6 @@ public class NVRManagerEditor : Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
-                    LoadNVRConfiguration();
                 }
                 if (!config.objectReferenceValue)
                 {
@@ -64,11 +62,11 @@ public class NVRManagerEditor : Editor
                     if (GUILayout.Button(new GUIContent(" load ", "加载配置，如无则自动创建"), GUILayout.Width(0)))
                     {
                         config.objectReferenceValue = NVRConfiguration.Create();
-                        LoadNVRConfiguration();
                     }
                 }
             }
             // Draw nested inspector
+            editor = config.objectReferenceValue ? CreateEditor(config.objectReferenceValue) as NVRConfigurationEditor : null;
             if (editor)
             {
                 using (EditorGUILayout.VerticalScope scop = new EditorGUILayout.VerticalScope("box"))
@@ -80,9 +78,5 @@ public class NVRManagerEditor : Editor
                 }
             }
         }
-    }
-    private void LoadNVRConfiguration()
-    {
-        editor = config.objectReferenceValue ? CreateEditor(config.objectReferenceValue) as NVRConfigurationEditor : null;
     }
 }
