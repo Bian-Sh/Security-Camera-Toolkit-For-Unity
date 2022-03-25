@@ -13,14 +13,14 @@ namespace zFramework.Media
         //loginHandle 海康是 int 类型 ，小于 -1 代表未成功登录
 
         protected override bool HasLogin => (int)(loginHandle ?? -1) > -1;
-        protected override bool IsPlaying => realHandle > -1;
+        protected override bool IsRealPlaying => realHandle > -1;
 
         //RealPlay 返回句柄参数，-1代表实时播放失败。
         private int realHandle = -1;
         private CHCNetSDK.REALDATACALLBACK realDataBack;
         public override void PlayReal()
         {
-            if (HasLogin && !IsPlaying)
+            if (HasLogin && !IsRealPlaying)
             {
                 CHCNetSDK.NET_DVR_PREVIEWINFO previewInfo = new CHCNetSDK.NET_DVR_PREVIEWINFO();
                 previewInfo.hPlayWnd = IntPtr.Zero;
@@ -61,7 +61,7 @@ namespace zFramework.Media
                     return;
                 }
 
-                if (!DHPlaySDK.PLAY_SetStreamOpenMode(lPort, HasLogin ? DHPlaySDK.STREAME_FILE : DHPlaySDK.STREAME_REALTIME))
+                if (!DHPlaySDK.PLAY_SetStreamOpenMode(lPort, IsRealPlaying ? DHPlaySDK.STREAME_REALTIME : DHPlaySDK.STREAME_FILE ))
                 {
                     Debug.LogWarning($"设置实时流播放模式失败：{DHPlaySDK.PLAY_GetLastErrorEx()}");
                     return;
@@ -102,12 +102,9 @@ namespace zFramework.Media
         public HKService(CameraInfomation info) : base(info)
         {
         }
-        byte[] buffer;
         private void DecodeCallback(int nPort, IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, IntPtr pUserData, int nReserved2)
         {
-            //TODO : 把丢帧的动作放在这里处理，避免传递过多的无法渲染的数据出去
-
-            if (IsPlaying && !isPause && pFrameInfo.nType == 3)
+            if (IsRealPlaying && !isPause && pFrameInfo.nType == 3)
             {
                 var frame = new I420AVideoFrame
                 {

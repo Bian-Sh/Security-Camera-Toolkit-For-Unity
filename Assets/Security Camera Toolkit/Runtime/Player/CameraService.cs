@@ -7,8 +7,8 @@ namespace zFramework.Media
         public CameraInfomation data;
         public object loginHandle; //登录句柄，数据类型：int 、c#指针 
         protected virtual bool HasLogin { get; }
-        protected virtual bool IsPlaying { get; }
-        public bool Enabled => IsPlaying;
+        protected virtual bool IsRealPlaying { get; }
+        public bool Enabled => IsRealPlaying;
 
         //暂停
         protected bool isPause = false;
@@ -57,7 +57,7 @@ namespace zFramework.Media
         /// <remarks>不建议调用 DHPlaySDK.PLAY_Pause ,因为画面会一直延迟下去</remarks>
         public virtual void Pause() 
         {
-            if (IsPlaying&&!isPause)
+            if (IsRealPlaying&&!isPause)
             {
                 isPause = true;
             }
@@ -68,7 +68,7 @@ namespace zFramework.Media
         /// </summary>
         public virtual void Resume() 
         {
-            if (IsPlaying&&isPause)
+            if (IsRealPlaying&&isPause)
             {
                 isPause = false; 
             }
