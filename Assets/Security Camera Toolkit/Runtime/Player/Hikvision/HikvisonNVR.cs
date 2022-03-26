@@ -84,6 +84,7 @@ namespace zFramework.Media
                         var state = CHCNetSDK.NET_DVR_Logout_V30((int)loginHandle);
                         if (state)
                         {
+                            loginHandle = null;
                             Debug.Log($"{nameof(HikvisonNVR)}: {data.ActiveHost} - {loginHandle} 登出成功");
                         }
                         else
