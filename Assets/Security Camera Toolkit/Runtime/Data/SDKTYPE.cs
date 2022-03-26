@@ -3,7 +3,7 @@
 
 namespace zFramework.Media
 {
-    public enum SDK
+    public enum SDKTYPE
     {
         HK,//海康
         YS,//宇视

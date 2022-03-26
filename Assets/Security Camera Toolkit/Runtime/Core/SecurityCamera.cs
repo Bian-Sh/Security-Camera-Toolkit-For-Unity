@@ -1,14 +1,14 @@
 ﻿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
-using UnityEngine;
-
 namespace zFramework.Media
 {
+    using UnityEngine;
+    using static NVRManager;
     public class SecurityCamera : MonoBehaviour, INVRStateHandler
     {
         [Header("请指定 NVR 主机地址:")]
         public string host;
-        public SDK sdk;
+        public SDKTYPE sdk;
         [Header("请指定 NVR 通道:")]
         public int channel;
         public STREAM steam_Type = STREAM.MAIN;
@@ -16,6 +16,7 @@ namespace zFramework.Media
         public VideoRenderer monitor;
         CameraService player = null;
         public string Host { get => host; }
+        public bool IsLogin { get => null != player && player.HasLogin; }
 
 
         private void Start() => SetupPlayer();
@@ -28,17 +29,8 @@ namespace zFramework.Media
                 host = this.host,
                 steamType = this.steam_Type,
             };
-            switch (sdk)
-            {
-                case SDK.HK:
-                    player = new HKService(info);
-                    break;
-                case SDK.YS:
-                    break;
-                case SDK.DH:
-                    break;
-            }
-            NVRManager.Register(sdk, this);
+            player = CreateCamService(sdk, info);
+            ConnectNVR(this);
         }
 
         //实时
@@ -67,8 +59,16 @@ namespace zFramework.Media
 
         private void OnDestroy()
         {
-            Stop();
-            NVRManager.UnRegister(this);
+            // 编辑器下 Security Camera 退出比 NVRManager 要早，所以先 try 为敬
+            try
+            {
+                Stop();
+                DisconnectNVR(this);
+            }
+            catch (System.Exception e)
+            {
+                Debug.Log($"{nameof(SecurityCamera)}: {e}");
+            }
         }
 
         //组件校验
@@ -94,6 +94,7 @@ namespace zFramework.Media
         {
             monitor.StopRendering(player);
             player?.StopPlay();
+            player?.SetLoginHandle(null);
         }
         #endregion
     }

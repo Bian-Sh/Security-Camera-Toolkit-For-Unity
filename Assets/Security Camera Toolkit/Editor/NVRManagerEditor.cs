@@ -1,6 +1,7 @@
 // Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 
+using System;
 using UnityEditor;
 using UnityEngine;
 using zFramework.Media;
@@ -27,13 +28,20 @@ public class NVRManagerEditor : Editor
             {
                 DrawNVRConfigurationNested();
             }
-            else
+            else 
             {
                 GUI.enabled = idt.name != "m_Script";
                 EditorGUILayout.PropertyField(idt);
                 GUI.enabled = true;
             }
+            if (idt.name == "mappings") 
+            {
+                break;
+            }
         }
+
+
+
         if (!config.objectReferenceValue)
         {
             EditorGUILayout.HelpBox("请使用右侧 ”Load“ 按钮添加 NVR Configuration 实例", MessageType.Error);

@@ -12,7 +12,7 @@ namespace zFramework.Media
     {
         //loginHandle 海康是 int 类型 ，小于 -1 代表未成功登录
 
-        protected override bool HasLogin => (int)(loginHandle ?? -1) > -1;
+        public override bool HasLogin => (int)(loginHandle ?? -1) > -1;
         protected override bool IsRealPlaying => realHandle > -1;
 
         //RealPlay 返回句柄参数，-1代表实时播放失败。

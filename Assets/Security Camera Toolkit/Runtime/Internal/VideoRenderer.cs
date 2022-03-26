@@ -16,8 +16,10 @@ namespace zFramework.Media
     public class VideoRenderer : MonoBehaviour
     {
         #region Show In Inspector
-        [Header("渲染状态:"),SerializeField] 
+#pragma warning disable CS0414 // 删除未读的私有成员
+        [Header("渲染状态:"),SerializeField]
         private bool isRendering;
+#pragma warning restore CS0414 // 删除未读的私有成员
         [Header("绘制帧率："), Range(15, 60), Tooltip(aboutframrate)]
         public int framerate = 25;
         [Header("帧队列最大容量："), Range(2, 5), Tooltip(aboutQueueSize)]

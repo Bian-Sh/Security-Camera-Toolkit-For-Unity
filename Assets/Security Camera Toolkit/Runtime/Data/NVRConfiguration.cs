@@ -1,4 +1,4 @@
-// Copyright (c) https://github.com/Bian-Sh
+ï»¿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 
 using System.Collections;
@@ -14,12 +14,13 @@ using UnityEditor;
 
 namespace zFramework.Media
 {
+    // TODO : ä¸å…è®¸è¾“å…¥ç›¸åŒçš„ä¸»æœºï¼Œéœ€è¦åœ¨ inspector ä¸Šæ ‡è¯†å‡ºæ¥
     public class NVRConfiguration : ScriptableObject
     {
-        const string soPath = "Security Camera Toolkit/Generated"; //´æ·Å NVRConfiguration ÊµÀı
+        const string soPath = "Security Camera Toolkit/Generated"; //å­˜æ”¾ NVRConfiguration å®ä¾‹
         public List<NVRInformation> nvrs = new List<NVRInformation>();
 
-        #region Single Instance / µ¥Àı
+        #region Single Instance / å•ä¾‹
         static NVRConfiguration _instance;
         public static NVRConfiguration Instance
         {
@@ -59,15 +60,15 @@ namespace zFramework.Media
         #endregion
 
 
-        #region NVR Êı¾İ±¾µØ»¯
+        #region NVR æ•°æ®æœ¬åœ°åŒ–
         const string jsonName = "NvrConfiguration.json";
         string jsonPath = Path.Combine(Application.streamingAssetsPath, "Configurations");
 
         public bool ExistConfiguration() => File.Exists(Path.Combine(jsonPath, jsonName));
-        //Í¨¹ı ±¾µØjson »ñÈ¡ NVR ÅäÖÃ£¬·½±ã¶¯Ì¬ĞŞ¸Ä NVR ÅäÖÃĞÅÏ¢
+        //é€šè¿‡ æœ¬åœ°json è·å– NVR é…ç½®ï¼Œæ–¹ä¾¿åŠ¨æ€ä¿®æ”¹ NVR é…ç½®ä¿¡æ¯
 
         /// <summary>
-        /// ½«ÅäÖÃ±£´æÎª json
+        /// å°†é…ç½®ä¿å­˜ä¸º json
         /// </summary>
         public void SaveNvrConfiguration()
         {
@@ -86,7 +87,7 @@ namespace zFramework.Media
 #endif
         }
         /// <summary>
-        /// ´Ó ±¾µØ JSON ¼ÓÔØ NVR ÅäÖÃ
+        /// ä» æœ¬åœ° JSON åŠ è½½ NVR é…ç½®
         /// </summary>
         public void LoadNvrConfiguration()
         {
@@ -108,7 +109,7 @@ namespace zFramework.Media
             }
             else
             {
-                Debug.LogWarning($"{nameof(NVRManager)}:²»´æÔÚ json ÅäÖÃÎÄ¼ş £¬Path ¼û ¡ı \n{jsonPath} ");
+                Debug.LogWarning($"{nameof(NVRManager)}:ä¸å­˜åœ¨ json é…ç½®æ–‡ä»¶ ï¼ŒPath è§ â†“ \n{jsonPath} ");
             }
         }
 
@@ -124,7 +125,7 @@ namespace zFramework.Media
 
         #endregion
 
-        #region Êı¾İĞ£Ñé
+        #region æ•°æ®æ ¡éªŒ
         private void OnValidate()
         {
             for (int i = 0; i < nvrs.Count; i++)
@@ -134,18 +135,18 @@ namespace zFramework.Media
                 {
                     nvr.enableMapping = false;
                     nvrs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: ÆôÓÃÊ§°Ü£¬Ó³ÉäÖ÷»ú·Ç·¨£¬Çë¼ì²é£¡");
+                    Debug.LogError($"{nameof(NVRManager)}: å¯ç”¨å¤±è´¥ï¼Œæ˜ å°„ä¸»æœºéæ³•ï¼Œè¯·æ£€æŸ¥ï¼");
                 }
                 if (!IsHostMatched(nvr.host) && nvr.enable)
                 {
                     nvr.enable = false;
                     nvrs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: ÆôÓÃÊ§°Ü£¬Ä¬ÈÏÖ÷»ú·Ç·¨£¬Çë¼ì²é£¡");
+                    Debug.LogError($"{nameof(NVRManager)}: å¯ç”¨å¤±è´¥ï¼Œé»˜è®¤ä¸»æœºéæ³•ï¼Œè¯·æ£€æŸ¥ï¼");
                 }
             }
         }
         /// <summary>
-        /// ÓÃÓÚĞ£Ñé IP:Port µÄÕıÔò
+        /// ç”¨äºæ ¡éªŒ IP:Port çš„æ­£åˆ™
         /// </summary>
 
         string pattern_ip = @"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}";

@@ -16,7 +16,7 @@ namespace zFramework.Media
         /// </summary>
         [Header("默认主机")]
         public string host;
-        public SDK type;
+        public SDKTYPE type;
         [Header("映射主机")]
         public string mapping; // 映射主机，外网访问
         [Header("启用映射"),Tooltip("复选框在映射主机存在的情况下激活")]

@@ -11,7 +11,7 @@
             "description": "25 块钱包邮的网络摄像头"
         },
         {
-            "host": "192.168.110.141:8006",
+            "host": "192.168.110.141:8001",
             "type": 2,
             "mapping": "",
             "enableMapping": false,
@@ -21,7 +21,7 @@
             "description": "25 块钱包邮的网络摄像头"
         },
         {
-            "host": "192.168.110.141:8010",
+            "host": "192.168.110.141:8002",
             "type": 1,
             "mapping": "",
             "enableMapping": false,
