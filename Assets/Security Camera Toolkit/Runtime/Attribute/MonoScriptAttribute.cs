@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
+using UnityEngine;
 using System;
 
 namespace zFramework.Media

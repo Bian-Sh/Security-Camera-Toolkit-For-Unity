@@ -7,7 +7,7 @@ namespace zFramework.Media
     /// Interface for video sources.
     /// <br>可提供视频源的接口</br>
     /// <br>这种写法，可以让一个视频源向多个 VideoRenderer 提供视频信息，但是，不要这样做</br>
-    /// <br>如果你想一个多个 RawImage 播放同一个画面，可以公用材质球吖，对不对？</br>
+    /// <br>如果你想多个 RawImage 播放同一个画面，可以公用材质球吖，对不对？</br>
     /// </summary>
     public interface IVideoSource
     {

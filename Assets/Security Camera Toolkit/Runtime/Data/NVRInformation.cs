@@ -1,7 +1,6 @@
 ﻿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
-// Copyright (c) https://github.com/Bian-Sh
-// Licensed under the MIT License.
+
 using System;
 using UnityEngine;
 

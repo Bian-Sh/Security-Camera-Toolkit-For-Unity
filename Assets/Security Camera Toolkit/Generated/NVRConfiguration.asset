@@ -12,28 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b9bd231aea558440ab4d7c371a476d1, type: 3}
   m_Name: NVRConfiguration
   m_EditorClassIdentifier: 
-  nvrs:
-  - host: 192.168.110.141:8000
-    type: 0
-    mapping: 
-    enableMapping: 0
-    userName: admin
-    password: Admin123456
-    enable: 1
-    description: "25 \u5757\u94B1\u5305\u90AE\u7684\u7F51\u7EDC\u6444\u50CF\u5934"
-  - host: 192.168.110.141:8001
-    type: 2
-    mapping: 
-    enableMapping: 0
-    userName: admin
-    password: Admin123456
-    enable: 1
-    description: "25 \u5757\u94B1\u5305\u90AE\u7684\u7F51\u7EDC\u6444\u50CF\u5934"
-  - host: 192.168.110.141:8002
-    type: 1
-    mapping: 
-    enableMapping: 0
-    userName: admin
-    password: Admin123456
-    enable: 1
-    description: "25 \u5757\u94B1\u5305\u90AE\u7684\u7F51\u7EDC\u6444\u50CF\u5934"
+  nvrs: []

@@ -1,4 +1,7 @@
-﻿using Hikvision;
+﻿// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
+
+using Hikvision;
 using System.Threading.Tasks;
 using UnityEngine;
 namespace zFramework.Media

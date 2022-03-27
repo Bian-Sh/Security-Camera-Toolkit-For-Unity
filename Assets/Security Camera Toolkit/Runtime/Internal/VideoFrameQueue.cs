@@ -1,10 +1,8 @@
 // Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace zFramework.Media
 {
@@ -23,10 +21,6 @@ namespace zFramework.Media
         /// </summary>
         int Height { get; set; }
 
-        /// <summary>
-        /// Raw storage buffer
-        /// </summary>
-        byte[] Buffer { get; set; }
         /// <summary>
         /// storage Y panel buffer
         /// </summary>
@@ -59,8 +53,6 @@ namespace zFramework.Media
         /// <summary>
         /// Raw byte buffer containing the frame data.
         /// </summary>
-
-        public byte[] Buffer { get; set; }
         public byte[] Buffer_Y { get; set; }
         public byte[] Buffer_U { get; set; }
         public byte[] Buffer_V { get; set; }
@@ -68,11 +60,7 @@ namespace zFramework.Media
         internal long GetSize()
         {
             var size = 0L;
-            if (null != Buffer)
-            {
-                size = Buffer.LongLength;
-            }
-            else if (null != Buffer_Y && null != Buffer_U && null != Buffer_V)
+            if (null != Buffer_Y && null != Buffer_U && null != Buffer_V)
             {
                 size = Buffer_Y.LongLength +
                               Buffer_U.LongLength +
@@ -241,14 +229,13 @@ namespace zFramework.Media
             _stopwatch.Restart();
         }
 
-        public bool CanEnqueue => QueryQueueState();
+        public bool IsQueueBlocked => QueryQueueState();
 
         private bool QueryQueueState()
         {
-            bool state = true;
-            if (_frameQueue.Count >= _maxQueueLength)
+            bool overflow = _frameQueue.Count >= _maxQueueLength;
+            if (overflow)
             {
-                state = false;
                 double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
                 //如果这一帧要丢弃，那也得被统计到 推流总帧率里面
@@ -262,7 +249,7 @@ namespace zFramework.Media
                 _droppedFrameTimeAverage.Push(droppedDt);
                 _lastDroppedTimeMs = curTime;
             }
-            return state;
+            return overflow;
         }
 
 

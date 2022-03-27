@@ -79,7 +79,7 @@ namespace zFramework.Media
 
         #region Assistant Fuction
 
-        private bool OnInterruptedSignal() => !videoFrameQueue.CanEnqueue;
+        private bool OnInterruptedSignal() => videoFrameQueue.IsQueueBlocked;
         private void CreateEmptyVideoTextures()
         {
             _textureY = _textureU = _textureV = null;

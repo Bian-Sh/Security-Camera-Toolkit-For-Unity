@@ -20,7 +20,9 @@ namespace zFramework.Media
     /// </summary>
     public class NVRManager : MonoBehaviour
     {
-        [SerializeField] bool autoLoadJson = false;
+        #region Fields
+        [SerializeField,Tooltip("是否自动加载 Json 文件，勾选则从磁盘加载并覆盖当前配置")]
+        bool autoLoadJson = false;
         [SerializeField] SDKInitMode m_SDKInitMode = SDKInitMode.Awake;
         public NVRConfiguration configuration;
         /// <summary>
@@ -33,7 +35,9 @@ namespace zFramework.Media
         /// </summary>
         [SerializeField]
         List<TypeMapping> mappings = new List<TypeMapping>();
+        #endregion
 
+        #region SDK Init
         void Start()
         {
             if (m_SDKInitMode == SDKInitMode.Start)
@@ -41,14 +45,11 @@ namespace zFramework.Media
                 InitSDK();
             }
         }
-
         private void Awake()
         {
             //注册前先反注册，避免意外注册多次
             Application.wantsToQuit -= Application_wantsToQuit;
             Application.wantsToQuit += Application_wantsToQuit;
-
-            EnsureInstanceDelayDestory();
 
             EnsureInstanceMode();
 
@@ -62,9 +63,6 @@ namespace zFramework.Media
                 InitSDK();
             }
         }
-
-
-
         /// <summary>
         /// 初始化正在使用中的 SDK 
         /// </summary>
@@ -94,8 +92,9 @@ namespace zFramework.Media
                 Debug.LogError($"{nameof(NVRManager)}: {nameof(NVRConfiguration) }还未指定！");
             }
         }
-
-        #region SDK auto clean up when applicaiton wants to quit
+        #endregion
+        
+        #region SDK  Clean up，will automatically cleanup when applicaiton wants to quit
         private bool Application_wantsToQuit()
         {
             //case 01: 如果 nvr 都没初始化，那就直接不卡退出
@@ -141,7 +140,7 @@ namespace zFramework.Media
             Application.Quit();
         }
         #endregion
-
+        
         #region Handle NVR Login/Logout
         /// <summary>
         /// 登录指定的 NVR 
@@ -197,8 +196,8 @@ namespace zFramework.Media
             Debug.Log($"{nameof(NVRManager)}:  所有 NVR 登出完成！");
         }
         #endregion
-
-        #region Handle SecurityCamera
+        
+        #region Handle SecurityCamera Regiester
 
         /// <summary>
         /// 反注册监控摄像机
@@ -249,19 +248,9 @@ sdktype：{camera.sdk}
         }
         #endregion
 
-        /// <summary>
-        /// SDK 初始化时机
-        /// </summary>
-        enum SDKInitMode
-        {
-            None,
-            Awake,
-            Start
-        }
-
         #region Simple Singleton
         static NVRManager instance;
-        static NVRManager Instance
+        public static NVRManager Instance
         {
             get
             {
@@ -287,20 +276,7 @@ sdktype：{camera.sdk}
                 DestroyImmediate(gameObject);
             }
         }
-        private void EnsureInstanceDelayDestory()
-        {
-        }
         #endregion
-
-        private void Reset()
-        {
-            configuration = NVRConfiguration.Instance;
-            if (!configuration)
-            {
-                Debug.Log($"{nameof(NVRManager)}: Create a new one");
-                configuration = NVRConfiguration.Create();
-            }
-        }
 
         #region Instance Factory
         /// <summary>
@@ -350,7 +326,7 @@ host：{info.ActiveHost}
         /// <param name="sdk">指定厂商</param>
         /// <param name="info">指定 监控需要的 信息</param>
         /// <returns><see cref="CameraService"/>实例</returns>
-        public static CameraService CreateCamService(SDKTYPE sdk, CameraInfomation info)
+        public static CameraService CreateCamera(SDKTYPE sdk, CameraInfomation info)
         {
             CameraService cam = default;
             var map = Instance.mappings.Find(v => v.sdk == sdk);
@@ -385,6 +361,33 @@ SDK：   {sdk}
             }
             return instance;
         }
+        #endregion
+
+        #region Miscellaneous 杂项
+        /// <summary>
+        /// SDK 初始化时机
+        /// </summary>
+        enum SDKInitMode
+        {
+            None,
+            Awake,
+            Start
+        }
+        private void Reset()
+        {
+            configuration = NVRConfiguration.Instance;
+            if (!configuration)
+            {
+                Debug.Log($"{nameof(NVRManager)}: Create a new one");
+                configuration = NVRConfiguration.Create();
+            }
+        }
+
+        private void OnApplicationQuit() 
+        {
+            Debug.Log($"{nameof(NVRManager)}: 应用退出！");
+        }
+
         #endregion
     }
 }

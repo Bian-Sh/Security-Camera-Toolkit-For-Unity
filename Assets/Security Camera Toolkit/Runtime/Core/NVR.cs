@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using zFramework.Media.Internal;
 
 namespace zFramework.Media

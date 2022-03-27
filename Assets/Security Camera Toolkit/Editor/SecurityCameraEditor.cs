@@ -1,42 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
 using UnityEngine;
 using UnityEditor;
 using zFramework.Media;
-using System.Linq;
-using System;
+using zFramework.Media.Internal;
 
 [CustomEditor(typeof(SecurityCamera)), CanEditMultipleObjects]
 public class SecurityCameraEditor : Editor
 {
-    string defaultitem = "NVR 主机未配置";
     SerializedProperty host;
     SerializedProperty sdk;
-    private void OnEnable()
-    {
-    }
-
-    private bool GetNVR(SerializedProperty host, out string[] hosts)
-    {
-        hosts = default;
-        var isSucess = true;
-        if (NVRConfiguration.Instance)
-        {
-            hosts = NVRConfiguration.Instance.nvrs.Where(v => !string.IsNullOrEmpty(v.host))
-                                                                                           .Select(v => v.host)
-                                                                                           .ToArray();
-        }
-        if (null == hosts || hosts.Length == 0)
-        {
-            hosts = new string[] { defaultitem };
-            isSucess = false;
-        }
-        if (string.IsNullOrEmpty(host.stringValue))
-        {
-            host.stringValue = hosts[0];
-        }
-        return isSucess;
-    }
+    private string error;
+    private string tips = @"
+1. NVR 配置丢失，点击 Load 可以重新生成配置
+2. NVR 配置中无此主机，可以点击 Fixed 将主机写入配置中。
+3. 正常情况下 load 和 Fixed 按钮为隐藏状态
+";
 
     //由于Unity 出现了一个 Property 窗口，从该窗口切换换回来，OnEnable 不会重新执行，所以nvr数据要实时刷新
     public override void OnInspectorGUI()
@@ -44,84 +23,125 @@ public class SecurityCameraEditor : Editor
         serializedObject.UpdateIfRequiredOrScript();
 
         host = host ?? serializedObject.FindProperty("host");
+        EditorGUI.BeginChangeCheck();
         var itr = serializedObject.GetIterator();
-        while (null != itr && itr.NextVisible(true))
+        itr.NextVisible(true);// 跳过 脚本 窗口的绘制
+
+        if (!string.IsNullOrEmpty(error))
         {
-            GUI.enabled = itr.name != "m_Script" && itr.name != "sdk";
-            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.HelpBox(error, MessageType.Error);
+        }
+        while (itr.NextVisible(true))
+        {
             if (itr.name == "host")
             {
-                if (DrawHostProperty(host))
+                if (DrawHostAndRelatedProperty(host))
                 {
-                    break;
+                    // 构建资产并 ping 的动作会导致本 inspector host property 被 dispose ，所以直接跳出本轮绘制
+                    return;
                 }
             }
-            else
+            else if (itr.name != "sdk")
             {
                 EditorGUILayout.PropertyField(itr);
             }
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-            }
-            GUI.enabled = true;
         }
 
+        host.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(host.isExpanded, "友情提示");
+        EditorGUILayout.EndFoldoutHeaderGroup();
+        if (host.isExpanded)
+        {
+            EditorGUILayout.HelpBox(tips, MessageType.None);
+        }
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 
-    private bool DrawHostProperty(SerializedProperty host)
+    private bool DrawHostAndRelatedProperty(SerializedProperty host)
     {
-        bool needbreak = false;
+        bool needreturn = false;
+        error = string.Empty;
         using (EditorGUILayout.HorizontalScope scope = new EditorGUILayout.HorizontalScope())
         {
-            var state = GetNVR(host, out var arr);
-            // 请留意：
-            // 如果你的 NVR 配置中原先的数据不见了，SecurityCamera 中的host 信息会重置为第一个。
-            // 所以 NVR 配置最好只做新增，不做删减
-            var index = Mathf.Max(0, Array.FindIndex(arr, v => v == host.stringValue));
-            index = EditorGUILayout.Popup(host.displayName, index, arr);
-            //只有获取到正确的 host 才会赋值
-            if (state)
+            EditorGUILayout.PropertyField(host);
+            using (EditorGUILayout.VerticalScope scope_v = new EditorGUILayout.VerticalScope(GUILayout.Width(48)))
             {
-                host.stringValue = arr[index];
-                SetSDKType(arr[index]);
-            }
-            else
-            {
-                GUI.skin.button.wordWrap = true;
-                if (GUILayout.Button(new GUIContent(" Ping ", "Ping NVR配置文件,不存在则新建"), GUILayout.Width(0)))
+                GUILayout.FlexibleSpace();
+                if (NVRConfiguration.Instance)
                 {
-                    NVRConfiguration.Create();
-                    needbreak = true;
+                    int index = NVRConfiguration.Instance.nvrs.FindIndex(V => V.host == host.stringValue);
+                    if (index != -1)
+                    {
+                        var nvr = NVRConfiguration.Instance.nvrs[index];
+                        sdk = sdk ?? serializedObject.FindProperty("sdk");
+                        sdk.enumValueIndex = (int)nvr.type;
+                        GUI.enabled = false;
+                        EditorGUILayout.PropertyField(sdk, GUIContent.none, GUILayout.Width(48));
+                        GUI.enabled = true;
+                    }
+                    else
+                    {
+                        error = @$" NVR 配置中不存在此主机，请修复!";
+                        var wrap_cached = GUI.skin.button.wordWrap;
+                        GUI.skin.button.wordWrap = true;
+                        if (GUILayout.Button(new GUIContent(" Fixed ", "修复：点击将本数据写入 NVR 配置"), GUILayout.Width(0)))
+                        {
+                            AddHostBack(host.stringValue);
+                            needreturn = true;
+                        }
+                        GUI.skin.button.wordWrap = wrap_cached;
+                    }
+                }
+                else
+                {
+                    error = @$" NVR 配置文件不存在，请加载!";
+                    var wrap_cached = GUI.skin.button.wordWrap;
+                    GUI.skin.button.wordWrap = true;
+                    if (GUILayout.Button(new GUIContent(" New ", "新建 NVR 配置文件"), GUILayout.Width(0)))
+                    {
+                        NVRConfiguration.Create();
+                        if (NVRManager.Instance)
+                        {
+                            NVRManager.Instance.configuration = NVRConfiguration.Instance;
+                            EditorUtility.SetDirty(NVRManager.Instance);
+                        }
+                        needreturn = true;
+                    }
+                    GUI.skin.button.wordWrap = wrap_cached;
                 }
             }
-            #region 不处理多选时值不一样的问题，费脑子，反正能用
-            /*
-            if (targets.Length > 1)
-            {
-                var diffvalue = targets.Cast<SecurityCamera>()
-                                                            .Select(v => v.host)
-                                                            .Distinct()
-                                                            .Count();
-                Debug.Log($"{nameof(SecurityCameraEditor)}: diffvalue count {diffvalue}");
-                if (diffvalue!=1)//说明存在不同的值
-                {
-
-                }
-            }
-             */
-            #endregion
         }
-        return needbreak;
+        return needreturn;
     }
 
-    private void SetSDKType(string host)
+    private void AddHostBack(string host)
     {
-        if (host != defaultitem)
+        var nvr = new NVRInformation
         {
-            var nvr = NVRConfiguration.Instance.nvrs.Find(V => V.host == host);
-            sdk = sdk ?? serializedObject.FindProperty("sdk");
-            sdk.enumValueIndex = (int)nvr.type;
+            host = host,
+            enable = true,
+            type = (target as SecurityCamera).sdk,
+            description = "此配置由机器生成，请补全信息！",
+        };
+        var config = NVRConfiguration.Instance;
+        Undo.RecordObject(config, "BeforeHostAddBack");
+        config.nvrs.Insert(0, nvr);
+        EditorUtility.SetDirty(config);
+        Selection.activeObject = config;
+        Editor editor = default;
+        CreateCachedEditor(config, typeof(NVRConfigurationEditor), ref editor);
+        NVRConfigurationEditor nvr_editor = editor as NVRConfigurationEditor;
+        var nvrs_prop = nvr_editor.serializedObject.FindProperty("nvrs");
+        nvrs_prop.isExpanded = true;
+        //把除了第一个以外的都折叠，方便用户关注核心问题
+        for (int i = 0; i < config.nvrs.Count; i++)
+        {
+            var nvr_prop = nvrs_prop.GetArrayElementAtIndex(i);
+            nvr_prop.isExpanded = i==0;
         }
+        Debug.LogWarning($"成功将主机 <color=yellow> {nvr.host} </color> 到 NVR 配置第<color=yellow> 1</color> 项中，请务必补全其他信息！");
     }
 }

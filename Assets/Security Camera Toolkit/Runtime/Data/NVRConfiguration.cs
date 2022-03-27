@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -58,7 +59,6 @@ namespace zFramework.Media
             return Instance;
         }
         #endregion
-
 
         #region NVR 数据本地化
         const string jsonName = "NvrConfiguration.json";
@@ -166,6 +166,20 @@ namespace zFramework.Media
         }
 
 
+        #endregion
+
+        #region Miscellaneous 杂项
+        public static string[] GetNVRHosts()
+        {
+            string[] arr = default;
+            if (Instance)
+            {
+                arr = Instance.nvrs.Where(v => !string.IsNullOrEmpty(v.host))
+                    .Select(v => v.host)
+                    .ToArray();
+            }
+            return arr;
+        }
         #endregion
     }
 }

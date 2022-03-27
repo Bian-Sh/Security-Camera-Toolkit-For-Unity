@@ -1,3 +1,5 @@
+// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
 using UnityEngine;
 using UnityEditor;
 using zFramework.Media;

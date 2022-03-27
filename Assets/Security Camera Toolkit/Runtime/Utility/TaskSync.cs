@@ -5,6 +5,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.LowLevel;
 namespace zFramework.Media.Internal
@@ -37,14 +40,14 @@ namespace zFramework.Media.Internal
             playerloop.subSystemList[index] = updateloop;
             //3. 设置自定义的 Loop 到 Unity 引擎
             PlayerLoop.SetPlayerLoop(playerloop);
-            //4. 已知：编辑器停止 Play 我们自己插入的 loop 依旧会触发，进入或退出Play 模式先清空 tasks
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
-            UnityEditor.EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-            static void EditorApplication_playModeStateChanged(UnityEditor.PlayModeStateChange obj)
+            //4. 已知：编辑器停止 Play 我们自己插入的 loop 依旧会触发，进入或退出Play 模式先清空 tasks
+            EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
+            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+            static void EditorApplication_playModeStateChanged(PlayModeStateChange obj)
             {
-                if (obj == UnityEditor.PlayModeStateChange.ExitingEditMode ||
-                      obj == UnityEditor.PlayModeStateChange.ExitingPlayMode)
+                if (obj == PlayModeStateChange.ExitingEditMode ||
+                      obj == PlayModeStateChange.ExitingPlayMode)
                 {
                     //清空任务列表
                     while (tasks.TryDequeue(out _)) { }
@@ -54,6 +57,25 @@ namespace zFramework.Media.Internal
             #endregion
         }
 
+#if UNITY_EDITOR
+        //5. 确保编辑器下推送的事件也能被执行
+        [InitializeOnLoadMethod]
+        static void EditorForceUpdate()
+        {
+            InitContext();
+            EditorApplication.update -= ForceEditorPlayerLoopUpdate;
+            EditorApplication.update += ForceEditorPlayerLoopUpdate;
+            void ForceEditorPlayerLoopUpdate()
+            {
+                if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
+                {
+                    // Not in Edit mode, don't interfere
+                    return;
+                }
+                Update();
+            }
+        }
+#endif
 
         /// <summary>
         ///  在主线程中执行

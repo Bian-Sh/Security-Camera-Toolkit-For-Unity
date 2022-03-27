@@ -6,11 +6,12 @@ namespace zFramework.Media
     using static NVRManager;
     public class SecurityCamera : MonoBehaviour, INVRStateHandler
     {
-        [Header("请指定 NVR 主机地址:")]
+        [Header("NVR 主机"), StringPopup(typeof(NVRConfiguration), "GetNVRHosts", "NVR 未配置")]
         public string host;
         public SDKTYPE sdk;
-        [Header("请指定 NVR 通道:")]
+        [Header("NVR 通道:")]
         public int channel;
+        [Header("主/辅 流:")]
         public STREAM steam_Type = STREAM.MAIN;
 
         public VideoRenderer monitor;
@@ -29,15 +30,18 @@ namespace zFramework.Media
                 host = this.host,
                 steamType = this.steam_Type,
             };
-            player = CreateCamService(sdk, info);
+            player = CreateCamera(sdk, info);
             ConnectNVR(this);
         }
 
         //实时
         public void PlayReal()
         {
-            monitor.StartRendering(player);
-            player.PlayReal();
+            if (!player.IsRealPlaying)
+            {
+                monitor.StartRendering(player);
+                player.PlayReal();
+            }
         }
         //暂停
         public void Pause()
@@ -59,7 +63,8 @@ namespace zFramework.Media
 
         private void OnDestroy()
         {
-            // 编辑器下 Security Camera 退出比 NVRManager 要早，所以先 try 为敬
+            // 编辑器下 Security Camera 有几率退出比 NVRManager 要早，所以先 try 为敬
+            // 实际开发中，记得在推出前需要主动销毁监控
             try
             {
                 Stop();

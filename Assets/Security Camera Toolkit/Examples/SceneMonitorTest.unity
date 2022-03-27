@@ -3751,6 +3751,7 @@ MonoBehaviour:
   load: {fileID: 893418690}
   render: {fileID: 1556334699}
   drop: {fileID: 982955850}
+  msg: string03
 --- !u!114 &1156841961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4071,6 +4072,7 @@ MonoBehaviour:
   load: {fileID: 1203123267}
   render: {fileID: 272902476}
   drop: {fileID: 1614440590}
+  msg: string04
 --- !u!114 &1225482049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4192,6 +4194,7 @@ MonoBehaviour:
   load: {fileID: 573366427}
   render: {fileID: 1273942453}
   drop: {fileID: 1556997758}
+  msg: string02
 --- !u!114 &1252707427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4947,7 +4950,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoLoadJson: 0
   m_SDKInitMode: 1
-  configuration: {fileID: 11400000, guid: e3ddb704d85db304981ff1ea3f185c85, type: 2}
+  configuration: {fileID: 11400000, guid: 74409155e58e2e346b7cf91e834972b9, type: 2}
   mappings:
   - sdk: 0
     nvr: zFramework.Media.HikvisonNVR, zFramework.Media.Runtime, Version=0.0.0.0,

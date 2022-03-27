@@ -7,7 +7,7 @@ namespace zFramework.Media
         public CameraInfomation data;
         public object loginHandle; //登录句柄，数据类型：int 、c#指针 
         public virtual bool HasLogin { get; }
-        protected virtual bool IsRealPlaying { get; }
+        public virtual bool IsRealPlaying { get; }
         public bool Enabled => IsRealPlaying;
 
         //暂停
@@ -61,7 +61,6 @@ namespace zFramework.Media
                 }
             }
         }
-
         protected ProcessInterruptSignal frameBlocked;
 
         public CameraService() { }

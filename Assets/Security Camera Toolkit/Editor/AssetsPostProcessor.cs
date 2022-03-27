@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿// Copyright (c) https://github.com/Bian-Sh
+// Licensed under the MIT License.
 using System.IO;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
@@ -21,7 +18,7 @@ namespace zFramework.Media.Editor
             if (paths.Length == 0) return;
             if (paths.Length > 1) // 只允许存在一个 HCNetSDKCom 文件夹
             {
-                UnityEngine.Debug.LogError($"{nameof(AssetsPostProcessing)}: Please make sure there has only one SDK Directory \''HCNetSDKCom\" in the project");
+                Debug.LogError($"{nameof(AssetsPostProcessing)}: Please make sure there has only one SDK Directory \''HCNetSDKCom\" in the project");
                 return;
             }
 
