@@ -54,9 +54,9 @@
 <details>
 <summary>2. 使用 NVR 管理器管理各异的厂商类型的 NVR </summary>
 
- > 用于加载 NVR配置 并按照 Mappings 设定的类型映射实例化 NVR 和 CameraService ，管理 NVR 的公共行为,管理 SDK 的初始化和回收
+ > 用于加载 NVR配置 并按照 Mappings 设定的类型映射实例化 NVR  ，管理 NVR 的公共行为,管理 SDK 的初始化和回收
  
- > 提供 NVR 配置丢失警示；提供 Mappings ，籍此可以实现多监控厂商 SDK 同时工作在一个项目中。
+ > 提供 NVR 配置丢失警示；提供 Mappings ，籍此可以实现在保持核心组件不修改的情况下支持多监控厂商 SDK 同时工作在一个项目中。
   
 正常|NVR 配置丢失
  |-|-|
@@ -65,11 +65,11 @@
 </details>
 
 <details>
-<summary>3. 使用 Security Camera 管理各异厂商的 CameraService 实例 </summary>
+<summary>3. 使用 Security Camera 管理各异厂商的推流逻辑（只有推流逻辑，但你可以写更多功能） </summary>
 
  > 作为门面一样的存在，不管是哪一个厂商的监控，都是使用它对外，对内按 NVRManager Mappings 的配置实例化指定的 ``CameraService`` 实现厂商差异化交互逻辑
  
- > 提供了与 NVRConfiguration 联动的 host 下拉选择，无需用户输入；同时提供了与 NVRConfiguration 数据不匹配时的编辑器工作流
+ > 提供了与 NVRConfiguration 联动的 host 下拉选择，无需用户输入；同时提供了与 NVRConfiguration 数据不匹配时的编辑器工作流，数据有效性一目了然，更可快速修正。
   
 正常|NVR 配置指定数据丢失|NVR 配置丢失
  |-|-|-|
@@ -78,11 +78,13 @@
 </details>
 
 <details>
-<summary>4. 通过 Video Renderer 实现个 SDK 推流的渲染</summary>
+<summary>4. 通过 Video Renderer 实现 YUV 推流数据的渲染</summary>
 
- > 视频渲染组件，实现了 YUV 数据到 RGB 数据的转换；使用 unsafe 数据拷贝，速度更快，按渲染能力拷贝，不做多余的数据对拷操作； 可调整绘制帧率，性能一手掌握；
+ > 视频渲染组件，实现了 YUV 数据到 RGB 数据的转换；使用 unsafe 数据拷贝，速度更快；按渲染能力拷贝，绝对不做多余的数据对拷操作； 可调整绘制帧率，性能一手掌握；
  
  > 提供帧率统计：推流、渲染、丢弃帧率一目了然，（考虑性能问题，推荐不统计，不展开调试面板）
+ 
+ > todo: 想要 通过 ``RawImage`` 大小自动判断使用**主流**还是**辅流**
  
  ![](./docs/VideoRenderer.png)
 
@@ -93,4 +95,8 @@
 
 ## 免责声明：
 
-这个项目目前接的是 海康的 SDK ，如需使用请阅读他们的许可说明，本仓库仅供交流，不对用户任何操作负责。
+1. 这个项目目前接的是 海康的 SDK ，如需使用他们的 SDK，请阅读他们的许可说明，本仓库仅供交流，不对用户任何操作负责。
+
+2. TO Hikvision：如果侵权，请邮件：bshsf@qq.com ,我会剔除你们的 SDK 动态链接库
+
+4. 
