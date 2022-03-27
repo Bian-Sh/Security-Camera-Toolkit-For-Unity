@@ -142,6 +142,6 @@ public class SecurityCameraEditor : Editor
             var nvr_prop = nvrs_prop.GetArrayElementAtIndex(i);
             nvr_prop.isExpanded = i==0;
         }
-        Debug.LogWarning($"成功将主机 <color=yellow> {nvr.host} </color> 到 NVR 配置第<color=yellow> 1</color> 项中，请务必补全其他信息！");
+        Debug.LogWarning($"添加到 NVR 配置第<color=yellow> 1</color> 项中，<color=yellow> 请补全</color> 其他信息！");
     }
 }
