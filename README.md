@@ -70,7 +70,8 @@
  > 作为门面一样的存在，不管是哪一个厂商的监控，都是使用它对外，对内按 NVRManager Mappings 的配置实例化指定的 ``CameraService`` 实现厂商差异化交互逻辑
  
  > 提供了与 NVRConfiguration 联动的 host 下拉选择，无需用户输入；同时提供了与 NVRConfiguration 数据不匹配时的编辑器工作流，数据有效性一目了然，更可快速修正。
-  
+ 
+> todo: 想要 通过 ``RawImage`` 大小自动判断使用**主流**还是**辅流**，用户可自行设置转换阈值 宽高同时低于这个阈值就会切换流类型
 正常|NVR 配置指定数据丢失|NVR 配置丢失
  |-|-|-|
  ![](./docs/SecurityCamera_normal.png)|![](./docs/SecurityCamera_nohost.png)|![](./docs/SecurityCamera_noconfig.png)
@@ -84,7 +85,7 @@
  
  > 提供帧率统计：推流、渲染、丢弃帧率一目了然，（考虑性能问题，推荐不统计，不展开调试面板）
  
- > todo: 想要 通过 ``RawImage`` 大小自动判断使用**主流**还是**辅流**
+
  
  ![](./docs/VideoRenderer.png)
 
@@ -99,4 +100,3 @@
 
 2. TO Hikvision：如果侵权，请邮件：bshsf@qq.com ,我会剔除你们的 SDK 动态链接库
 
-4. 
