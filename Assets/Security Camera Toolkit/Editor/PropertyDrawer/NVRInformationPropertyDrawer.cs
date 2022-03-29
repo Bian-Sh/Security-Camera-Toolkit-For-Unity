@@ -1,4 +1,4 @@
-// Copyright (c) https://github.com/Bian-Sh
+ï»¿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -16,11 +16,11 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
     {
         EditorGUI.BeginProperty(position, label, property);
 
-        //ÉèÖÃÊôĞÔÃû¿í¶È
+        //è®¾ç½®å±æ€§åå®½åº¦
         EditorGUIUtility.labelWidth = 60;
         position.height = EditorGUIUtility.singleLineHeight;
 
-        // ³õÊ¼»¯ĞèÒªÓÃµ½µÄ×Ö¶Î
+        // åˆå§‹åŒ–éœ€è¦ç”¨åˆ°çš„å­—æ®µ
         var host = property.FindPropertyRelative("host");
         var type = property.FindPropertyRelative("type");
         var enable = property.FindPropertyRelative("enable");
@@ -53,22 +53,22 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
         }
         else
         {
-            position.y += 8; //ÏëÉÏÏÂÁôµãÓàÁ¿
+            position.y += 8; //æƒ³ä¸Šä¸‹ç•™ç‚¹ä½™é‡
             hostmatched = IsHostMatched(host.stringValue);
-            mapingmatched = IsHostMatched(mapping.stringValue);
-            isHelpboxShouldBeShowed = !hostmatched || (!mapingmatched && enableMapping.boolValue);
+            mapingmatched = IsHostMatched(mapping.stringValue, true);
+            isHelpboxShouldBeShowed = !hostmatched || !mapingmatched;
             if (isHelpboxShouldBeShowed)
             {
-                position.y += position.height + 2; //¿ªÊ¼»æÖÆ Ö÷»ú¸ñÊ½Òì³£ ĞÅÏ¢
+                position.y += position.height + 2; //å¼€å§‹ç»˜åˆ¶ ä¸»æœºæ ¼å¼å¼‚å¸¸ ä¿¡æ¯
                 EditorGUI.HelpBox(position, "helpbox_host_error".Allocate("00"), MessageType.Error);
             }
-            #region »æÖÆÄ¬ÈÏÖ÷»ú
+            #region ç»˜åˆ¶é»˜è®¤ä¸»æœº
             position.y += position.height + 2;
             var host_pos = new Rect(position);
-            EditorGUI.PrefixLabel(host_pos, new GUIContentEx("00","host", "tooltip_host_error"));
+            EditorGUI.PrefixLabel(host_pos, new GUIContentEx("00", "host", "tooltip_host_error"));
             var hostv_pos = new Rect(position)
             {
-                width = position.width - 60 - 58 - 15,//¼ä¸ô 10Pixel
+                width = position.width - 60 - 58 - 15,//é—´éš” 10Pixel
             };
             hostv_pos.x += 60;
             if (hostmatched)
@@ -94,13 +94,13 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             enable.boolValue = EditorGUI.Toggle(sdk_pos, enable.boolValue);
             #endregion
 
-            #region Ó³ÉäÖ÷»ú
+            #region æ˜ å°„ä¸»æœº
             position.y += position.height + 2;
             var map_pos = new Rect(position);
-            EditorGUI.PrefixLabel(map_pos, new GUIContentEx("00","mapping", "tooltip_host_error"));
+            EditorGUI.PrefixLabel(map_pos, new GUIContentEx("00", "mapping", "tooltip_host_error"));
             map_pos.x += 60;
             map_pos.width = position.width - 60 - 21;
-            if (mapingmatched || !enableMapping.boolValue)
+            if (mapingmatched)
             {
                 EditorGUI.DelayedTextField(map_pos, mapping, GUIContent.none);
             }
@@ -112,22 +112,25 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
                 }
             }
             map_pos.x += map_pos.width + 4;
-            enableMapping.boolValue = EditorGUI.Toggle(map_pos, enableMapping.boolValue);
+            using (new EditorGUI.DisabledGroupScope(string.IsNullOrEmpty(mapping.stringValue)))
+            {
+                enableMapping.boolValue = EditorGUI.Toggle(map_pos, enableMapping.boolValue);
+            }
             #endregion
 
-            #region »æÖÆÕËºÅ 
+            #region ç»˜åˆ¶è´¦å· 
             position.y += position.height + 2;
             var user_pos = new Rect(position);
-            EditorGUI.PrefixLabel(user_pos, new GUIContentEx("00","user", "label_tooltip_user"));
+            EditorGUI.PrefixLabel(user_pos, new GUIContentEx("00", "user", "label_tooltip_user"));
             user_pos.x += 60;
             user_pos.width = position.width - 60 - 2;
             EditorGUI.DelayedTextField(user_pos, userName, GUIContent.none);
 
             #endregion
-            #region ÃÜÂë
+            #region å¯†ç 
             position.y += position.height + 2;
             var psw_pos = new Rect(position);
-            EditorGUI.PrefixLabel(psw_pos, new GUIContentEx("00","password", "label_tooltip_psw"));
+            EditorGUI.PrefixLabel(psw_pos, new GUIContentEx("00", "password", "label_tooltip_psw"));
             psw_pos.x += 60;
             psw_pos.width = position.width - 60 - 21;
 
@@ -145,27 +148,27 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             }
             #endregion
 
-            #region »æÖÆ Description
+            #region ç»˜åˆ¶ Description
             position.y += position.height + 2;
             var desc_pos = new Rect(position);
-            EditorGUI.PrefixLabel(desc_pos, new GUIContentEx("00","desc", "label_tooltip_desc"));
+            EditorGUI.PrefixLabel(desc_pos, new GUIContentEx("00", "desc", "label_tooltip_desc"));
             desc_pos.x += 60;
             desc_pos.width = position.width - 60;
-            desc_pos.height = position.height * (isHelpboxShouldBeShowed?2:3);//Ã»¶¯Í¼³öÏÖµÄ control ÔİÊ±Ã»ÕÒµ½»ñÈ¡¸ß¶ÈµÄ·½·¨
+            desc_pos.height = position.height * (isHelpboxShouldBeShowed ? 2 : 3);//æ²¡åŠ¨å›¾å‡ºç°çš„ control æš‚æ—¶æ²¡æ‰¾åˆ°è·å–é«˜åº¦çš„æ–¹æ³•
             desc.stringValue = EditorGUI.TextArea(desc_pos, desc.stringValue);
             #endregion
         }
         EditorGUI.EndProperty();
     }
- 
+
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         var height = base.GetPropertyHeight(property, label);
         if (property.isExpanded)
         {
-            var control_height = EditorGUIUtility.singleLineHeight * 8 + 2 * 6+16;// 8 ¸ö controlµÄ¸ß¶È Íâ¼Ó 6 ¸ö 2 pixel µÄ¼ä¸ô£¬16 ÎªÉÏÏÂµÄÓàÁ¿
-            var helpbox_height = 2 + EditorGUIUtility.singleLineHeight;  //Õâ¸öÔİÊ±ÏÈÕâÃ´Ğ´×Å£¬Ã»É¶ÓÃ
+            var control_height = EditorGUIUtility.singleLineHeight * 8 + 2 * 6 + 16;// 8 ä¸ª controlçš„é«˜åº¦ å¤–åŠ  6 ä¸ª 2 pixel çš„é—´éš”ï¼Œ16 ä¸ºä¸Šä¸‹çš„ä½™é‡
+            var helpbox_height = 2 + EditorGUIUtility.singleLineHeight;  //è¿™ä¸ªæš‚æ—¶å…ˆè¿™ä¹ˆå†™ç€ï¼Œæ²¡å•¥ç”¨
             height = control_height + (isHelpboxShouldBeShowed ? helpbox_height : 0);
         }
         return height;
@@ -175,21 +178,25 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
     #region Assistance Function
 
     /// <summary>
-    /// ÓÃÓÚĞ£Ñé IP:Port µÄÕıÔò
+    /// ç”¨äºæ ¡éªŒ IP:Port çš„æ­£åˆ™
     /// </summary>
 
-    string pattern_ip = @"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}";
+    string pattern_ip = @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$";
     string pattern_port = @"^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$";
     private bool isHelpboxShouldBeShowed;
 
-    private bool IsHostMatched(string host)
+    private bool IsHostMatched(string host, bool treatEmptyAsMatch = false)
     {
-        var arr = host.Trim().Split(':');
-        var ip = arr[0];
-        var port = arr.Length == 1 ? "80" : arr[1];
-        var ipMatch = Regex.IsMatch(ip, pattern_ip);
-        var portMatch = Regex.IsMatch(port, pattern_port);
-        return ipMatch && portMatch;
+        if (!string.IsNullOrEmpty(host))
+        {
+            var arr = host.Trim().Split(':');
+            var ip = arr[0];
+            var port = arr.Length == 1 ? "80" : arr[1];
+            var ipMatch = Regex.IsMatch(ip, pattern_ip);
+            var portMatch = Regex.IsMatch(port, pattern_port);
+            return ipMatch && portMatch;
+        }
+        return treatEmptyAsMatch;
     }
 
     #endregion
