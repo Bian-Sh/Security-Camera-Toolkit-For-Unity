@@ -28,7 +28,7 @@
 
 - ``VideoRenderer``:视频渲染组件，用于将 YUV 视频数据转为 RGB 视频帧 
 
-- ``WordMapping``: 框架内编辑器中使用的本地化**本地化** 模块，``ScriptableObject`` 单例，目前仅对 ``NVRInformation`` 进行了本地化处理，语言跟随系统语言变换
+- ``WordMapping``: 框架内编辑器中使用的**本地化**模块，``ScriptableObject`` 单例，目前仅对 ``NVRInformation`` 进行了本地化处理，语言跟随系统语言变换
 
 ## 定制组件：
 
