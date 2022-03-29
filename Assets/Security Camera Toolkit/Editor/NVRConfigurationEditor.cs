@@ -21,9 +21,10 @@ public class NVRConfigurationEditor : Editor
         {
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
-            fontSize = 42,
-            stretchWidth = true
+            fontSize = 28,
+            stretchWidth = true,
         };
+        title_style.normal.textColor = new Color32(54,101,155,255);
         EditorGUILayout.LabelField("NVR 配置面板", title_style);
         using (EditorGUILayout.VerticalScope scope = new EditorGUILayout.VerticalScope("box"))
         {
@@ -37,7 +38,7 @@ public class NVRConfigurationEditor : Editor
 
     public void DrawList()
     {
-        list = list ?? serializedObject.FindProperty("nvrs");
+        list = serializedObject.FindProperty("nvrs");
         serializedObject.UpdateIfRequiredOrScript();
         BeginChangeCheck();
         EditorGUILayout.PropertyField(list);
@@ -77,7 +78,7 @@ public class NVRConfigurationEditor : Editor
     }
 
     string msg = @"约定：
-1. NVR 配置最好只做新增，不做删减，否则 SecurityCamera.host 会被重置
+1. NVR 配置最好只做新增，不做删减
 2. NVR 配置文件全局只有一份(单例)
 ";
 }

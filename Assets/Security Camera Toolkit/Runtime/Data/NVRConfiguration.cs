@@ -125,48 +125,6 @@ namespace zFramework.Media
 
         #endregion
 
-        #region 数据校验
-        private void OnValidate()
-        {
-            for (int i = 0; i < nvrs.Count; i++)
-            {
-                var nvr = nvrs[i];
-                if (!IsHostMatched(nvr.mapping) && nvr.enableMapping)
-                {
-                    nvr.enableMapping = false;
-                    nvrs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: 启用失败，映射主机非法，请检查！");
-                }
-                if (!IsHostMatched(nvr.host) && nvr.enable)
-                {
-                    nvr.enable = false;
-                    nvrs[i] = nvr;
-                    Debug.LogError($"{nameof(NVRManager)}: 启用失败，默认主机非法，请检查！");
-                }
-            }
-        }
-        /// <summary>
-        /// 用于校验 IP:Port 的正则
-        /// </summary>
-
-        string pattern_ip = @"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}";
-        string pattern_port = @"^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$";
-        private bool IsHostMatched(string host)
-        {
-            if (!host.EndsWith(":"))
-            {
-                var arr = host.Trim().Split(':');
-                var ip = arr[0];
-                var port = arr.Length == 1 ? "80" : arr[1];
-                var ipMatch = Regex.IsMatch(ip, pattern_ip);
-                var portMatch = Regex.IsMatch(port, pattern_port);
-                return ipMatch && portMatch;
-            }
-            return false;
-        }
-
-
-        #endregion
 
         #region Miscellaneous 杂项
         public static string[] GetNVRHosts()
