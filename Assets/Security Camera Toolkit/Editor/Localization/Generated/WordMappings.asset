@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7045387961935936570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
+  m_Name: 0-for nvr config
+  m_EditorClassIdentifier: 
+  maps: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0fc2a2d46ab204ea4962ccf95558f8, type: 3}
+  m_Name: WordMappings
+  m_EditorClassIdentifier: 
+  reverse: 1
+  maps:
+  - key: host
+    english: Host
+    chinese: "\u4E3B\u673A"
+  - key: mapping
+    english: Mapping
+    chinese: "\u6620\u5C04"
+  - key: enable
+    english: Enable
+    chinese: "\u542F\u7528"
+  - key: disable
+    english: Disable
+    chinese: "\u542F\u7528"
+  - key: user
+    english: 'User '
+    chinese: "\u8D26\u53F7"
+  - key: password
+    english: Password
+    chinese: "\u5BC6\u7801"
+  - key: desc
+    english: Remarks
+    chinese: "\u63CF\u8FF0"
+  - key: label_tooltip_desc
+    english: Keyin some description as what your like
+    chinese: "\u8F93\u5165\u5907\u5FD8\u4FE1\u606F"
+  - key: tooltip_host_error
+    english: Please use host in ip:port format
+    chinese: "\u8BF7\u4F7F\u7528 ip:port \u683C\u5F0F\u7684\u4E3B\u673A"
+  - key: helpbox_host_error
+    english: The host format is wrong, please correct it!
+    chinese: "\u4E3B\u673A\u683C\u5F0F\u4E0D\u5BF9,\u8BF7\u4FEE\u6B63!"
+  - key: host_enable_tip
+    english: -Host Enable-
+    chinese: "-\u4E3B\u673A\u5DF2\u542F\u7528-"
+  - key: mapping_enable_tip
+    english: -Mapping Enable-
+    chinese: "-\u6620\u5C04\u4E3B\u673A\u5DF2\u542F\u7528-"
+  - key: label_tooltip_user
+    english: NVR Login Account
+    chinese: "NVR \u767B\u5F55\u8D26\u53F7"
+  - key: label_tooltip_psw
+    english: NVR Login Password
+    chinese: "NVR \u767B\u5F55\u5BC6\u7801"
+  - key: default_title_host
+    english: Please assign a NVR host
+    chinese: "\u8BF7\u5206\u914D NVR \u4E3B\u673A"
+  mapCollections: []
+--- !u!114 &4064779863047401738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
+  m_Name: 0-for nvr config
+  m_EditorClassIdentifier: 
+  maps: []

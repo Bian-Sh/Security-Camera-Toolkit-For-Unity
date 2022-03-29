@@ -124,7 +124,7 @@ public class SecurityCameraEditor : Editor
             host = host,
             enable = true,
             type = (target as SecurityCamera).sdk,
-            description = "此配置由机器生成，请补全信息！",
+            description = "此配置由机器生成，请补全信息！   ",
         };
         var config = NVRConfiguration.Instance;
         Undo.RecordObject(config, "BeforeHostAddBack");
@@ -140,8 +140,12 @@ public class SecurityCameraEditor : Editor
         for (int i = 0; i < config.nvrs.Count; i++)
         {
             var nvr_prop = nvrs_prop.GetArrayElementAtIndex(i);
-            nvr_prop.isExpanded = i==0;
+            nvr_prop.isExpanded = i == 0;
         }
+        var nvr_propv2 = nvrs_prop.GetArrayElementAtIndex(0);
+
+
+        
         Debug.LogWarning($"添加到 NVR 配置第<color=yellow> 1</color> 项中，<color=yellow> 请补全</color> 其他信息！");
     }
 }
