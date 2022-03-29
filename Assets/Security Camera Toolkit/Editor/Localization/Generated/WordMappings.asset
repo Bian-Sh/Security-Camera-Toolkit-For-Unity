@@ -1,31 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2943295648034534986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
-  m_Name: 0-for nvr config
-  m_EditorClassIdentifier: 
-  maps: []
---- !u!114 &-1570666840626117063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
-  m_Name: 0-for nvr config
-  m_EditorClassIdentifier: 
-  maps: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38,7 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0fc2a2d46ab204ea4962ccf95558f8, type: 3}
   m_Name: WordMappings
   m_EditorClassIdentifier: 
-  reverse: 1
+  reverse: 0
+  mapCollections:
+  - {fileID: 5470622131655373211}
+--- !u!114 &5470622131655373211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
+  m_Name: 00-ForNVRInofDrawer
+  m_EditorClassIdentifier: 
   maps:
   - key: host
     english: Host
@@ -85,6 +73,3 @@ MonoBehaviour:
   - key: default_title_host
     english: Please assign a NVR host
     chinese: "\u8BF7\u5206\u914D NVR \u4E3B\u673A"
-  mapCollections:
-  - {fileID: -2943295648034534986}
-  - {fileID: -1570666840626117063}

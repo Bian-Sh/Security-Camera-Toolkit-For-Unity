@@ -95,20 +95,6 @@
 					return half3(r, g, b);
 				}
 
-
-
-				//fixed4 frag(v2f i) : SV_Target
-				//{
-				//	fixed4 col = fixed4(0, 0, 0, 1);
-				//	float y = clamp(tex2D(_YTexture, i.uv).w,0,1);
-				//	float u = clamp(tex2D(_UTexture, i.uv).w,0,1);
-				//	float v = clamp(tex2D(_VTexture, i.uv).w,0,1);
-				//	col.x =y + 1.4022 * v - 0.7011;
-				//	col.y = y - 0.3456 * u - 0.7145 * v + 0.53005;
-				//	col.z =y + 1.771 * u - 0.8855;
-				//	return col;
-				//}
-
 				fixed4 frag(v2f i) : SV_Target
 				{
 					half3 yuv;
@@ -117,8 +103,6 @@
 					yuv.z = tex2D(_VTexture, i.uv).w;
 					return fixed4(yuv2rgb(yuv), 1.0);
 				}
-
-
 				ENDCG
 			}
 		}

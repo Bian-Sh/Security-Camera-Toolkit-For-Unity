@@ -39,7 +39,11 @@ namespace zFramework.Media
         protected void OnDisable() => CreateEmptyVideoTextures();
         void Start()
         {
+            // 如果你想要这个监控的画面同步到其他的监控上，下面这句话注释掉即可
             monitor.material = new Material(monitor.material);
+            // 不用找为什么 YUV 材质球挂载在 RawImage 之后就只读了，别慌，那是因为 RawImage 存在于 Mask 之下导致的
+            // 同样，使用 materialForRendering 而不使用 monitor.material 也是因为 Mask 组件，调用后者在 Mask 组件中不会刷新画面
+            // videoMaterial = monitor.material;
             videoMaterial = monitor.materialForRendering;
             CreateEmptyVideoTextures();
         }

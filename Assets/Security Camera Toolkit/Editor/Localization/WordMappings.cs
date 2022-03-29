@@ -107,7 +107,6 @@ namespace zFramework.Localization
                     GUI.Label(rect, "Mapping Collections");
                 };
                 list.elementHeight = EditorGUIUtility.singleLineHeight;
-                list.drawElementBackgroundCallback += OnDrawListItemBackground;
                 list.drawElementCallback += OnDrawListItem;
                 list.onRemoveCallback += OnRemoveListItem;
                 list.onAddCallback += OnAddListItem;
@@ -170,15 +169,6 @@ namespace zFramework.Localization
                 var import = AssetImporter.GetAtPath(path);
                 import.SaveAndReimport();
                 return mc;
-            }
-
-            private void OnDrawListItemBackground(Rect rect, int index, bool isActive, bool isFocused)
-            {
-                if (isFocused || isActive)
-                {
-                    var color = isFocused ? new Color32(58, 114, 176, 255) : new Color32(174, 174, 174, 255);//174, 174, 174
-                    EditorGUI.DrawRect(rect, color);
-                }
             }
 
             private void OnDrawListItem(Rect rect, int index, bool isActive, bool isFocused)
