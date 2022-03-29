@@ -1,6 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7045387961935936570
+--- !u!114 &-2943295648034534986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
+  m_Name: 0-for nvr config
+  m_EditorClassIdentifier: 
+  maps: []
+--- !u!114 &-1570666840626117063
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,17 +85,6 @@ MonoBehaviour:
   - key: default_title_host
     english: Please assign a NVR host
     chinese: "\u8BF7\u5206\u914D NVR \u4E3B\u673A"
-  mapCollections: []
---- !u!114 &4064779863047401738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
-  m_Name: 0-for nvr config
-  m_EditorClassIdentifier: 
-  maps: []
+  mapCollections:
+  - {fileID: -2943295648034534986}
+  - {fileID: -1570666840626117063}

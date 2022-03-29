@@ -32,12 +32,12 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
 
         var foldout_Pos = new Rect(position);
         foldout_Pos.height = EditorGUI.GetPropertyHeight(SerializedPropertyType.String, new GUIContent(host.stringValue));
-        var title = string.IsNullOrEmpty(host.stringValue) ? "default_title_host".Allocate() : host.stringValue;
+        var title = string.IsNullOrEmpty(host.stringValue) ? "default_title_host".Allocate("00") : host.stringValue;
         property.isExpanded = EditorGUI.Foldout(foldout_Pos, property.isExpanded, title);
 
         if (!property.isExpanded)
         {
-            var tip = !enable.boolValue ? "" : enableMapping.boolValue ? "mapping_enable_tip".Allocate() : "host_enable_tip".Allocate();
+            var tip = !enable.boolValue ? "" : enableMapping.boolValue ? "mapping_enable_tip".Allocate("00") : "host_enable_tip".Allocate("00");
             if (!string.IsNullOrEmpty(tip))
             {
                 GUIStyle style = new GUIStyle();
@@ -60,12 +60,12 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             if (isHelpboxShouldBeShowed)
             {
                 position.y += position.height + 2; //开始绘制 主机格式异常 信息
-                EditorGUI.HelpBox(position, "helpbox_host_error".Allocate(), MessageType.Error);
+                EditorGUI.HelpBox(position, "helpbox_host_error".Allocate("00"), MessageType.Error);
             }
             #region 绘制默认主机
             position.y += position.height + 2;
             var host_pos = new Rect(position);
-            EditorGUI.PrefixLabel(host_pos, new GUIContentEx("host", "tooltip_host_error"));
+            EditorGUI.PrefixLabel(host_pos, new GUIContentEx("00","host", "tooltip_host_error"));
             var hostv_pos = new Rect(position)
             {
                 width = position.width - 60 - 58 - 15,//间隔 10Pixel
@@ -97,7 +97,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             #region 映射主机
             position.y += position.height + 2;
             var map_pos = new Rect(position);
-            EditorGUI.PrefixLabel(map_pos, new GUIContentEx("mapping", "tooltip_host_error"));
+            EditorGUI.PrefixLabel(map_pos, new GUIContentEx("00","mapping", "tooltip_host_error"));
             map_pos.x += 60;
             map_pos.width = position.width - 60 - 21;
             if (mapingmatched || !enableMapping.boolValue)
@@ -118,7 +118,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             #region 绘制账号 
             position.y += position.height + 2;
             var user_pos = new Rect(position);
-            EditorGUI.PrefixLabel(user_pos, new GUIContentEx("user", "label_tooltip_user"));
+            EditorGUI.PrefixLabel(user_pos, new GUIContentEx("00","user", "label_tooltip_user"));
             user_pos.x += 60;
             user_pos.width = position.width - 60 - 2;
             EditorGUI.DelayedTextField(user_pos, userName, GUIContent.none);
@@ -127,7 +127,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             #region 密码
             position.y += position.height + 2;
             var psw_pos = new Rect(position);
-            EditorGUI.PrefixLabel(psw_pos, new GUIContentEx("password", "label_tooltip_psw"));
+            EditorGUI.PrefixLabel(psw_pos, new GUIContentEx("00","password", "label_tooltip_psw"));
             psw_pos.x += 60;
             psw_pos.width = position.width - 60 - 21;
 
@@ -148,7 +148,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             #region 绘制 Description
             position.y += position.height + 2;
             var desc_pos = new Rect(position);
-            EditorGUI.PrefixLabel(desc_pos, new GUIContentEx("desc", "label_tooltip_desc"));
+            EditorGUI.PrefixLabel(desc_pos, new GUIContentEx("00","desc", "label_tooltip_desc"));
             desc_pos.x += 60;
             desc_pos.width = position.width - 60;
             desc_pos.height = position.height * (isHelpboxShouldBeShowed?2:3);//没动图出现的 control 暂时没找到获取高度的方法
