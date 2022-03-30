@@ -32,6 +32,7 @@ namespace zFramework.Media.Demo
             cam.Stop();
             cam.steamType = (STREAM)arg0;
             cam.PlayReal();
+            Debug.Log($"{nameof(NVRController)}: 完成主辅流的切换");
         }
 
         void Login() => _ = LoginAsync();

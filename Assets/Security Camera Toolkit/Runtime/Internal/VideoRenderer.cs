@@ -131,9 +131,6 @@ namespace zFramework.Media
                 {
                     lumaWidth = frame.Width;
                     lumaHeight = frame.Height;
-
-                    frameDataSize = frame.GetSize();
-
                     if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
                     {
                         _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.Alpha8, mipChain: false);
@@ -217,7 +214,6 @@ namespace zFramework.Media
         private int preFrameRate = 0;
         [SerializeField] private int lumaWidth;
         [SerializeField] private int lumaHeight;
-        [SerializeField] private long frameDataSize;
         [Serializable]
         public class VideoRendererEvent : UnityEvent<string, string, string> { }
         #endregion

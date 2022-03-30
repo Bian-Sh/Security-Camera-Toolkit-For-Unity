@@ -56,18 +56,6 @@ namespace zFramework.Media
         public byte[] Buffer_Y { get; set; }
         public byte[] Buffer_U { get; set; }
         public byte[] Buffer_V { get; set; }
-
-        internal long GetSize()
-        {
-            var size = 0L;
-            if (null != Buffer_Y && null != Buffer_U && null != Buffer_V)
-            {
-                size = Buffer_Y.LongLength +
-                              Buffer_U.LongLength +
-                              Buffer_V.LongLength;
-            }
-            return size;
-        }
     }
 
     /// <summary>
