@@ -9,10 +9,12 @@ namespace zFramework.Media
         [Header("NVR 主机"), StringPopup(typeof(NVRConfiguration), "GetNVRHosts", "NVR 未配置")]
         public string host;
         public SDKTYPE sdk;
+        // 指向 NVR 中的通道，海康不接 NVR 也行 channel 默认为 1 
+        // 注意监控的 通道取值范围会因各个厂商而异
         [Header("NVR 通道:")]
         public int channel;
         [Header("主/辅 流:")]
-        public STREAM steam_Type = STREAM.MAIN;
+        public STREAM steamType = STREAM.MAIN;
 
         public VideoRenderer monitor;
         CameraService player = null;
@@ -24,13 +26,7 @@ namespace zFramework.Media
 
         public void SetupPlayer()
         {
-            var info = new CameraInfomation
-            {
-                channel = this.channel,
-                host = this.host,
-                steamType = this.steam_Type,
-            };
-            player = CreateCamera(sdk, info);
+            player = CreateCamera(sdk, this);
             ConnectNVR(this);
         }
 
@@ -52,7 +48,7 @@ namespace zFramework.Media
         //停止
         public void Stop()
         {
-            monitor?.StopRendering(player);
+            monitor?.StopRendering();
             player?.StopPlay();
         }
         //恢复
@@ -97,7 +93,7 @@ namespace zFramework.Media
 
         public void OnLogout()
         {
-            monitor.StopRendering(player);
+            monitor?.StopRendering();
             player?.StopPlay();
             player?.SetLoginHandle(null);
         }

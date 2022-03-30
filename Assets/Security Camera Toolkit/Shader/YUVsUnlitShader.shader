@@ -2,6 +2,7 @@
 {
 	Properties
 	{
+		[HideInInspector] [NoScaleOffset] _MainTex("Base (RGB)", 2D) = "white" {}
 		[HideInInspector][NoScaleOffset]_YTexture("Texture",2D) = ""{}
 		[HideInInspector][NoScaleOffset]_UTexture("Texture",2D) = ""{}
 		[HideInInspector][NoScaleOffset]_VTexture("Texture",2D) = ""{}

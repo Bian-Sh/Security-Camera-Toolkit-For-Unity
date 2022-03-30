@@ -13,10 +13,7 @@ namespace zFramework.Media
         /// </summary>
         public override bool IsLogin => null != loginHandle && (int)loginHandle > -1;//(int)(loginHandle??-1)> -1;
 
-        public HikvisonNVR(NVRInformation data) : base(data)
-        {
-
-        }
+        public HikvisonNVR(NVRInformation data) : base(data) { }
 
         public override bool CleanUp()
         {
@@ -42,6 +39,7 @@ namespace zFramework.Media
 
         /// <summary>
         /// <inheritdoc/>
+        /// <br>异步操作的 API ，请在调用保持克制，在 UI 层面做一个互锁，简易示例见 NVRController</br>
         /// </summary>
         /// <returns></returns>
         public override async Task LoginAsync()

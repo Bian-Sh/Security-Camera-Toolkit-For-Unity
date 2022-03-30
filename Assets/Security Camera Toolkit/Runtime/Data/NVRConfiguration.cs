@@ -1,13 +1,11 @@
 ﻿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
 using System;
-using System.Text.RegularExpressions;
 using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,23 +21,19 @@ namespace zFramework.Media
 
         #region Single Instance / 单例
         static NVRConfiguration _instance;
-        public static NVRConfiguration Instance
-        {
-            get
-            {
-                if (!_instance)
-                {
-                    _instance = Load();
-                }
-                return _instance;
-            }
-        }
+        public static NVRConfiguration Instance => Load();
         private static NVRConfiguration Load()
         {
-            var file = Path.Combine("Assets", soPath, $"{nameof(NVRConfiguration)}.asset");
-            var so = AssetDatabase.LoadMainAssetAtPath(file);
-            return so as NVRConfiguration;
+#if UNITY_EDITOR
+            if (!_instance)
+            {
+                var file = Path.Combine("Assets", soPath, $"{nameof(NVRConfiguration)}.asset");
+                _instance = AssetDatabase.LoadMainAssetAtPath(file) as NVRConfiguration;
+            }
+#endif
+            return _instance;
         }
+#if UNITY_EDITOR
         public static NVRConfiguration Create()
         {
             if (!Instance)
@@ -58,6 +52,8 @@ namespace zFramework.Media
             EditorGUIUtility.PingObject(Instance);
             return Instance;
         }
+#endif
+
         #endregion
 
         #region NVR 数据本地化
@@ -124,8 +120,6 @@ namespace zFramework.Media
         }
 
         #endregion
-
-
         #region Miscellaneous 杂项
         public static string[] GetNVRHosts()
         {

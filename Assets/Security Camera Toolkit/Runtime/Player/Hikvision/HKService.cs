@@ -24,8 +24,8 @@ namespace zFramework.Media
             {
                 CHCNetSDK.NET_DVR_PREVIEWINFO previewInfo = new CHCNetSDK.NET_DVR_PREVIEWINFO();
                 previewInfo.hPlayWnd = IntPtr.Zero;
-                previewInfo.lChannel = base.data.channel;
-                previewInfo.dwStreamType = (uint)STREAM.MAIN;
+                previewInfo.lChannel = facade.channel;
+                previewInfo.dwStreamType = (uint)facade.steamType;
                 previewInfo.dwLinkMode = 0;
                 previewInfo.bBlocked = true;
                 previewInfo.dwDisplayBufNum = 15;
@@ -33,7 +33,7 @@ namespace zFramework.Media
                 realHandle = CHCNetSDK.NET_DVR_RealPlay_V40((int)loginHandle, ref previewInfo, realDataBack, IntPtr.Zero);
                 if (realHandle > -1)
                 {
-                    Debug.Log($" { base.data.channel } 实时预览成功");
+                    Debug.Log($" { facade.channel } 实时预览成功");
                 }
                 else
                 {
@@ -55,62 +55,60 @@ namespace zFramework.Media
             //需要解码
             if (lPort <= -1)
             {
-                if (!DHPlaySDK.PLAY_GetFreePort(ref lPort))
+                if (!PLAY_GetFreePort(ref lPort))
                 {
-                    Debug.LogWarning($"分配播放库通道号失败：  {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.LogWarning($"分配播放库通道号失败：  {PLAY_GetLastErrorEx()}");
                     return;
                 }
 
-                if (!DHPlaySDK.PLAY_SetStreamOpenMode(lPort, IsRealPlaying ? DHPlaySDK.STREAME_REALTIME : DHPlaySDK.STREAME_FILE))
+                if (!PLAY_SetStreamOpenMode(lPort, IsRealPlaying ? STREAME_REALTIME : STREAME_FILE))
                 {
-                    Debug.LogWarning($"设置实时流播放模式失败：{DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.LogWarning($"设置实时流播放模式失败：{PLAY_GetLastErrorEx()}");
                     return;
                 }
-                if (!DHPlaySDK.PLAY_OpenStream(lPort, IntPtr.Zero, 0, 2 * 1024 * 1024))
+                if (!PLAY_OpenStream(lPort, IntPtr.Zero, 0, 2 * 1024 * 1024))
                 {
-                    Debug.LogWarning($"打开码流失败! {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.LogWarning($"打开码流失败! {PLAY_GetLastErrorEx()}");
                     return;
                 }
                 decondCallBack = new DECCBFUN(DecodeCallback);
-                if (!DHPlaySDK.PLAY_SetDecCallBack(lPort, decondCallBack))
+                if (!PLAY_SetDecCallBack(lPort, decondCallBack))
                 {
                     Debug.LogWarning($"设置解码回调函数失败! {0}");
                     return;
                 }
 
-                if (!DHPlaySDK.PLAY_SetDecCBStream(lPort, 3))
+                if (!PLAY_SetDecCBStream(lPort, 3))
                 {
                     Debug.Log($"设置解码格式! {0}");
                     return;
                 }
 
-                if (!DHPlaySDK.PLAY_Play(lPort, IntPtr.Zero))
+                if (!PLAY_Play(lPort, IntPtr.Zero))
                 {
-                    Debug.Log($"开始解码失败! { DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.Log($"开始解码失败! { PLAY_GetLastErrorEx()}");
                     return;
                 }
-                DHPlaySDK.PLAY_SetPlaySpeed(lPort, 1f);
+                PLAY_SetPlaySpeed(lPort, 1f);
             }
             else if (dwBufSize > 0)
             {
-                if (!DHPlaySDK.PLAY_InputData(lPort, pBuffer, dwBufSize))
+                if (!PLAY_InputData(lPort, pBuffer, dwBufSize))
                 {
-                    Debug.LogWarning($"{nameof(HKService)}: 播放库数据装载失败 errorcode = {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.LogWarning($"{nameof(HKService)}: 播放库数据装载失败 errorcode = {PLAY_GetLastErrorEx()}");
                 }
             }
         }
-        public HKService(CameraInfomation info) : base(info)
-        {
-        }
+        public HKService(SecurityCamera facade) : base(facade) { }
         private void DecodeCallback(int nPort, IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, IntPtr pUserData, int nReserved2)
         {
             if (IsRealPlaying && !isPause && pFrameInfo.nType == 3)
             {
-                // 先访问 VideoRenderer 是否视频帧队列已满，满了就把当前推进来的数据丢弃
-                if (!frameBlocked())
+                // 先访问 VideoRenderer 是否视频帧队列已满，满了就把当前推进来的数据不管
+                if (null!=frameBlocked&&!frameBlocked())
                 {
                     var frame = new I420VideoFrame(pFrameInfo.nWidth, pFrameInfo.nHeight, pBuf);
-                    frameReady(frame);
+                    frameReady?.Invoke(frame);
                 }
             }
         }
@@ -134,13 +132,13 @@ namespace zFramework.Media
             {
                 var temp = lPort;
                 lPort = -1;
-                if (!DHPlaySDK.PLAY_Stop(temp))
+                if (!PLAY_Stop(temp))
                 {
-                    Debug.Log($"停止解码失败， ErrorCode = {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.Log($"停止解码失败， ErrorCode = {PLAY_GetLastErrorEx()}");
                 }
-                if (!DHPlaySDK.PLAY_CloseStream(temp))
+                if (!PLAY_CloseStream(temp))
                 {
-                    Debug.Log($"关闭解码流失败，ErrorCode = {DHPlaySDK.PLAY_GetLastErrorEx()}");
+                    Debug.Log($"关闭解码流失败，ErrorCode = {PLAY_GetLastErrorEx()}");
                 }
             }
         }

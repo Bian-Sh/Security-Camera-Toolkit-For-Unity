@@ -37,7 +37,7 @@ public class SecurityCameraEditor : Editor
             {
                 if (DrawHostAndRelatedProperty(host))
                 {
-                    // 构建资产并 ping 的动作会导致本 inspector host property 被 dispose ，所以直接跳出本轮绘制
+                    // 里面的逻辑会导致 inspector host property 被 dispose ，直接跳出本轮绘制
                     return;
                 }
             }

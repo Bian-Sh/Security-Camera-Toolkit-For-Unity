@@ -4,7 +4,7 @@ namespace zFramework.Media
 {
     public class CameraService : IVideoSource
     {
-        public CameraInfomation data;
+        public SecurityCamera facade;
         public object loginHandle; //登录句柄，数据类型：int 、c#指针 
         public virtual bool HasLogin { get; }
         public virtual bool IsRealPlaying { get; }
@@ -64,9 +64,9 @@ namespace zFramework.Media
         protected ProcessInterruptSignal frameBlocked;
 
         public CameraService() { }
-        public CameraService(CameraInfomation info)
+        public CameraService(SecurityCamera camera)
         {
-            this.data = info;
+            this.facade = camera;
         }
 
         public void SetLoginHandle(object handle) => loginHandle = handle;

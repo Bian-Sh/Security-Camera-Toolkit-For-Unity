@@ -3,6 +3,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using System;
 
 namespace zFramework.Media.Demo
 {
@@ -11,16 +12,28 @@ namespace zFramework.Media.Demo
     {
         public Button login_bt;
         public Button logout_bt;
+        public Dropdown dropdown;
+        SecurityCamera cam;
         Text login, logout;
 
         private void Start()
         {
+            cam = GetComponent<SecurityCamera>();
             login = login_bt.GetComponentInChildren<Text>();
             logout = logout_bt.GetComponentInChildren<Text>();
 
             login_bt.onClick.AddListener(Login);
             logout_bt.onClick.AddListener(Logout);
+            dropdown.onValueChanged.AddListener(OnSteamTypeChanged);
         }
+
+        private void OnSteamTypeChanged(int arg0)
+        {
+            cam.Stop();
+            cam.steamType = (STREAM)arg0;
+            cam.PlayReal();
+        }
+
         void Login() => _ = LoginAsync();
         void Logout() => _ = LogoutAsync();
 

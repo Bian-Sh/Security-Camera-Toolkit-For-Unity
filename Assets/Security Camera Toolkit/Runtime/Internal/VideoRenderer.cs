@@ -1,7 +1,6 @@
 ﻿// Copyright (c) https://github.com/Bian-Sh
 // Licensed under the MIT License.
 using System;
-using System.Runtime.InteropServices;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,14 +16,13 @@ namespace zFramework.Media
     {
         #region Show In Inspector
 #pragma warning disable CS0414 // 删除未读的私有成员
-        [Header("渲染状态:"),SerializeField]
+        [Header("渲染状态:"), SerializeField]
         private bool isRendering;
 #pragma warning restore CS0414 // 删除未读的私有成员
-        [Header("绘制帧率："), Range(15, 60), Tooltip(aboutframrate)]
-        public int framerate = 25;
+        [Header("取流速率："), Range(10, 60), Tooltip(aboutframrate), SerializeField]
+        private int framerate = 25;
         [Header("帧队列最大容量："), Range(2, 5), Tooltip(aboutQueueSize)]
         public int maxFrameQueueSize = 3;
-
         [Tooltip(aboutstatistics)]
         public bool enableStatistics = true;
         [SerializeField]
@@ -56,10 +54,14 @@ namespace zFramework.Media
         /// <summary>
         /// 停止渲染
         /// </summary>
-        public void StopRendering(IVideoSource source)
+        public void StopRendering()
         {
-            source.OnVideoFrameReady -= I420AVideoFrameReady;
-            source.OnInterruptedSignal -= OnInterruptedSignal;
+            if (null != source)
+            {
+                source.OnVideoFrameReady -= I420AVideoFrameReady;
+                source.OnInterruptedSignal -= OnInterruptedSignal;
+                source = null;
+            }
             videoFrameQueue?.Clear();
             isRendering = false;
             CreateEmptyVideoTextures();
@@ -73,6 +75,7 @@ namespace zFramework.Media
         /// </summary>
         public void StartRendering(IVideoSource source)
         {
+            this.source = source;
             videoFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(maxFrameQueueSize);
             source.OnVideoFrameReady += I420AVideoFrameReady;
             source.OnInterruptedSignal += OnInterruptedSignal;
@@ -83,6 +86,7 @@ namespace zFramework.Media
 
         #region Assistant Fuction
 
+        public float RenderFPS { set => framerate = Mathf.RoundToInt(value); }
         private bool OnInterruptedSignal() => videoFrameQueue.IsQueueBlocked;
         private void CreateEmptyVideoTextures()
         {
@@ -107,7 +111,7 @@ namespace zFramework.Media
             if (preFrameRate != framerate)
             {
                 preFrameRate = framerate;
-                frameDuration = Mathf.Max(0f, 1f / Mathf.Max(15, framerate) - 0.003f);
+                frameDuration = Mathf.Max(0f, 1f / Mathf.Max(10, framerate) - 0.003f);
             }
 
             if (videoFrameQueue != null)
@@ -188,6 +192,7 @@ namespace zFramework.Media
         #endregion
 
         #region Some Fields
+        IVideoSource source;
         RawImage monitor;
         Material videoMaterial;
         /// <summary>

@@ -21,7 +21,7 @@ namespace zFramework.Media
     public class NVRManager : MonoBehaviour
     {
         #region Fields
-        [SerializeField,Tooltip("是否自动加载 Json 文件，勾选则从磁盘加载并覆盖当前配置")]
+        [SerializeField, Tooltip("是否自动加载 Json 文件，勾选则从磁盘加载并覆盖当前配置")]
         bool autoLoadJson = false;
         [SerializeField] SDKInitMode m_SDKInitMode = SDKInitMode.Awake;
         public NVRConfiguration configuration;
@@ -93,7 +93,7 @@ namespace zFramework.Media
             }
         }
         #endregion
-        
+
         #region SDK  Clean up，will automatically cleanup when applicaiton wants to quit
         private bool Application_wantsToQuit()
         {
@@ -121,6 +121,7 @@ namespace zFramework.Media
             {
                 yield return 0;
             }
+            Debug.Log($"{nameof(NVRManager)}: NVR 均已登出....");
             //2. Clean SDK 
             // NVR SDK 的 Clean up 动作只需要执行一次
             foreach (var item in nvrs)
@@ -136,11 +137,16 @@ namespace zFramework.Media
                     }
                 }
             }
+            nvrs.Clear(); 
             //3. 真的退出
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
             Application.Quit();
+#endif
         }
         #endregion
-        
+
         #region Handle NVR Login/Logout
         /// <summary>
         /// 登录指定的 NVR 
@@ -170,7 +176,10 @@ namespace zFramework.Media
                 await nvr?.LogoutAsync();
             }
         }
-
+        /// <summary>
+        /// 无差别登录所有 NVR 
+        /// </summary>
+        /// <returns></returns>
         public static async Task LoginAllAsync()
         {
             var nvr_arr = Instance.nvrs.SelectMany(v => v.Value);
@@ -183,6 +192,11 @@ namespace zFramework.Media
             await Task.WhenAll(tasks);
             Debug.Log($"{nameof(NVRManager)}:  所有 NVR 登录完成！");
         }
+
+        /// <summary>
+        /// 无差别登出所有 NVR 
+        /// </summary>
+        /// <returns></returns>
         public static async Task LogoutAllAsync()
         {
             var nvr_arr = Instance.nvrs.SelectMany(v => v.Value);
@@ -196,7 +210,7 @@ namespace zFramework.Media
             Debug.Log($"{nameof(NVRManager)}:  所有 NVR 登出完成！");
         }
         #endregion
-        
+
         #region Handle SecurityCamera Regiester
 
         /// <summary>
@@ -324,27 +338,27 @@ host：{info.ActiveHost}
         /// 构建 <see cref="CameraService"/> 实例
         /// </summary>
         /// <param name="sdk">指定厂商</param>
-        /// <param name="info">指定 监控需要的 信息</param>
+        /// <param name="cam">指定 监控需要的 信息</param>
         /// <returns><see cref="CameraService"/>实例</returns>
-        public static CameraService CreateCamera(SDKTYPE sdk, CameraInfomation info)
+        public static CameraService CreateCamera(SDKTYPE sdk, SecurityCamera cam)
         {
-            CameraService cam = default;
+            CameraService service = default;
             var map = Instance.mappings.Find(v => v.sdk == sdk);
             if (null != map && !string.IsNullOrEmpty(map.camera))
             {
-                cam = Create<CameraService>(map.camera, info);
+                service = Create<CameraService>(map.camera, cam);
                 Debug.Log(@$"{nameof(NVRManager)}: 实例化 SecurityCameraService 完成! 更多 ↓
 SDK：   {sdk}
-通道：  {info.channel}
-流类型: {info.steamType}
-主机：  {info.host}
+通道：  {cam.channel}
+流类型: {cam.steamType}
+主机：  {cam.host}
 ");
             }
             else
             {
                 Debug.LogError($"{nameof(NVRManager)}: 无法完成 NVR 实例化，厂商 {sdk} 的 NVR 类型未指定！ ");
             }
-            return cam;
+            return service;
         }
 
         static T Create<T>(string type, params object[] args) where T : class, new()
@@ -373,6 +387,7 @@ SDK：   {sdk}
             Awake,
             Start
         }
+#if UNITY_EDITOR
         private void Reset()
         {
             configuration = NVRConfiguration.Instance;
@@ -382,12 +397,7 @@ SDK：   {sdk}
                 configuration = NVRConfiguration.Create();
             }
         }
-
-        private void OnApplicationQuit() 
-        {
-            Debug.Log($"{nameof(NVRManager)}: 应用退出！");
-        }
-
+#endif
         #endregion
     }
 }

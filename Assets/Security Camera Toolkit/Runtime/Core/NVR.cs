@@ -8,7 +8,7 @@ using zFramework.Media.Internal;
 
 namespace zFramework.Media
 {
-    public  class NVR 
+    public class NVR
     {
         /// <summary>
         /// NVR 实例绑定的 信息
@@ -16,7 +16,7 @@ namespace zFramework.Media
         public NVRInformation data;
         protected object loginHandle;
         public object LoginHandle => loginHandle;
-        public virtual bool IsLogin{get;}
+        public virtual bool IsLogin { get; }
         /// <summary>
         /// NVR 下的所有监控
         /// </summary>
@@ -46,20 +46,20 @@ namespace zFramework.Media
         // 登录：登录发生在非主线程，TaskSync 投递的事件不是同步完成需要检测
         // 登出：理由同上，另外，需要 SecurtiyCamera 先都退出了再 退出NVR 
         /// <summary>
-        /// 查询挂载到 NVR 的各个相机是否已经同步登录/登出句柄
+        /// 查询挂载到 NVR 的各个相机是否已经同步登录/登出句柄,并处理了各自的登录登出事宜
         /// </summary>
         /// <param name="isLogin">查询的状态</param>
         /// <returns></returns>
-        async Task QueryCameraStatusAsync(bool isLogin) 
+        async Task QueryCameraStatusAsync(bool isLogin)
         {
-            await Task.Run(()=> 
+            await Task.Run(() =>
             {
+                var waiting = true;
                 do
                 {
                     Thread.Sleep(30);//每次检查状态前先等几帧的感觉 ，一般情况下，一帧是 0.02f 
-                    var result = cameras.All(v => v.IsLogin == isLogin);
-                    if (result) break;
-                } while (true);
+                    waiting = cameras.Any(v => v.IsLogin != isLogin);
+                } while (waiting);
             });
         }
 
@@ -84,7 +84,7 @@ namespace zFramework.Media
         /// 初始化 SDK 
         /// <br>基本上所有 SDK 的初始化速度都非常的快，所以直接主线程走起</br>
         /// </summary>
-        public virtual bool InitSDK() 
+        public virtual bool InitSDK()
         {
             return false;
         }
@@ -92,7 +92,7 @@ namespace zFramework.Media
         /// 清理 SDK 
         /// <br>CleanUp 应该只被安排在软件退出的那一刻，同步逻辑更简单，主线程走起</br>
         /// </summary>
-        public virtual bool CleanUp() 
+        public virtual bool CleanUp()
         {
             return false;
         }
@@ -104,7 +104,7 @@ namespace zFramework.Media
             {
                 cameras.Add(camera);
                 //首次注册 NVR ，同步 NVR 登录状态
-                camera.OnLogin(loginHandle); 
+                camera.OnLogin(loginHandle);
             }
         }
         public void RemoveCamera(SecurityCamera camera)
