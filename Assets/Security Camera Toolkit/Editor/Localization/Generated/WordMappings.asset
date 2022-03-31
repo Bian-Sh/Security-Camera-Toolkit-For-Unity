@@ -15,6 +15,29 @@ MonoBehaviour:
   reverse: 0
   mapCollections:
   - {fileID: 5470622131655373211}
+  - {fileID: 1778837946094705063}
+--- !u!114 &1778837946094705063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a1cee5358fbe419b192cf1a8d2f39, type: 3}
+  m_Name: 01-ForNVRConfiguration
+  m_EditorClassIdentifier: 
+  maps:
+  - key: nvr_arr_tootip
+    english: Type in your nvr info here,so we can load it automatically
+    chinese: "\u5728\u6B64\u5904\u8F93\u5165\u60A8\u7684 nvr \u4FE1\u606F\uFF0C\u4EE5\u4FBF\u6211\u4EEC\u81EA\u52A8\u52A0\u8F7D"
+  - key: nvr_arr_label
+    english: NVR Collection
+    chinese: "NVR \u5217\u8868"
+  - key: nvr_config_title
+    english: NVR Configuration
+    chinese: "NVR \u914D\u7F6E\u9762\u677F"
 --- !u!114 &5470622131655373211
 MonoBehaviour:
   m_ObjectHideFlags: 0

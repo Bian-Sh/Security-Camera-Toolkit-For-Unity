@@ -152,7 +152,7 @@ namespace zFramework.Localization
                 serializedProperty.intValue++;
                 serializedProperty.serializedObject.ApplyModifiedProperties();
                 list.index = list.serializedProperty.arraySize - 1;
-                var value = GenerateMapCollection($"00-ForNVRInofDrawer");
+                var value = GenerateMapCollection($"01-ForNVRConfiguration");
                 list.serializedProperty.GetArrayElementAtIndex(list.index).objectReferenceValue = value;
                 list.serializedProperty.serializedObject.ApplyModifiedProperties();
                 Undo.SetCurrentGroupName(undoAdd);

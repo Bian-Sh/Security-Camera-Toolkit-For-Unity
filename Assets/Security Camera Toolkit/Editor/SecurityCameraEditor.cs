@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEditor;
 using zFramework.Media;
 using zFramework.Media.Internal;
+using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
 [CustomEditor(typeof(SecurityCamera)), CanEditMultipleObjects]
 public class SecurityCameraEditor : Editor
@@ -142,10 +146,6 @@ public class SecurityCameraEditor : Editor
             var nvr_prop = nvrs_prop.GetArrayElementAtIndex(i);
             nvr_prop.isExpanded = i == 0;
         }
-        var nvr_propv2 = nvrs_prop.GetArrayElementAtIndex(0);
-
-
-        
         Debug.LogWarning($"添加到 NVR 配置第<color=yellow> 1</color> 项中，<color=yellow> 请补全</color> 其他信息！");
     }
 }
