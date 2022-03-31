@@ -112,7 +112,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
                 }
             }
             map_pos.x += map_pos.width + 4;
-            using (new EditorGUI.DisabledGroupScope(string.IsNullOrEmpty(mapping.stringValue)))
+            using (new EditorGUI.DisabledGroupScope(string.IsNullOrEmpty(mapping.stringValue) || !mapingmatched))
             {
                 enableMapping.boolValue = EditorGUI.Toggle(map_pos, enableMapping.boolValue);
             }
