@@ -61,8 +61,6 @@
 				sampler2D _UTexture;
 				sampler2D _VTexture;
 
-				float4 _MainTex_ST;
-
 				v2f vert(appdata v)
 				{
 					v2f o;

@@ -105,7 +105,8 @@ namespace zFramework.Media
             if (IsRealPlaying && !isPause && pFrameInfo.nType == 3)
             {
                 // 先访问 VideoRenderer 是否视频帧队列已满，满了就把当前推进来的数据不管
-                if (null!=frameBlocked&&!frameBlocked())
+                var blocked = frameBlocked?.Invoke() ?? true;
+                if (!blocked)
                 {
                     var frame = new I420VideoFrame(pFrameInfo.nWidth, pFrameInfo.nHeight, pBuf);
                     frameReady?.Invoke(frame);
