@@ -25,7 +25,6 @@ namespace zFramework.Media
                 }
             }
         }
-        bool m_ViewString = false;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -35,8 +34,8 @@ namespace zFramework.Media
                 Rect labelRect = position;
                 labelRect.xMax = r.xMin;
                 position = r;
-                m_ViewString = GUI.Toggle(labelRect, m_ViewString, "", "label");
-                if (m_ViewString)
+                property.isExpanded = GUI.Toggle(labelRect, property.isExpanded, "", "label");
+                if (property.isExpanded)
                 {
                     property.stringValue = EditorGUI.TextField(position, property.stringValue);
                     return;

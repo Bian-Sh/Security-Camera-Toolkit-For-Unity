@@ -123,7 +123,7 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             var user_pos = new Rect(position);
             EditorGUI.PrefixLabel(user_pos, new GUIContentEx("00", "user", "label_tooltip_user"));
             user_pos.x += 60;
-            user_pos.width = position.width - 60 - 2;
+            user_pos.width = position.width - 60;
             EditorGUI.DelayedTextField(user_pos, userName, GUIContent.none);
 
             #endregion
@@ -131,13 +131,11 @@ public class NVRInformationPropertyDrawer : PropertyDrawer
             position.y += position.height + 2;
             var psw_pos = new Rect(position);
             EditorGUI.PrefixLabel(psw_pos, new GUIContentEx("00", "password", "label_tooltip_psw"));
+            psw_pos.width = 60;
+            password.isExpanded = GUI.Toggle(psw_pos, password.isExpanded,"","label");
+           
             psw_pos.x += 60;
-            psw_pos.width = position.width - 60 - 21;
-
-            var pswt_pos = new Rect(position);
-            pswt_pos.width = 20;
-            pswt_pos.x = position.width + 48;
-            password.isExpanded = EditorGUI.Toggle(pswt_pos, password.isExpanded);
+            psw_pos.width = position.width - 60;
             if (password.isExpanded)
             {
                 password.stringValue = EditorGUI.TextField(psw_pos, password.stringValue);
