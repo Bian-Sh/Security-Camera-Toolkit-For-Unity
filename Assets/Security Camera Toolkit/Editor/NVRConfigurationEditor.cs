@@ -30,6 +30,7 @@ public class NVRConfigurationEditor : Editor
     private void OnDrawerElementBG(Rect rect, int index, bool isActive, bool isFocused)
     {
         bool shouldHighlight = false;
+        if (index < 0 || index > list.arraySize - 1) return;
         if (index == 0)
         {
             var prop = list.GetArrayElementAtIndex(index);
@@ -42,9 +43,10 @@ public class NVRConfigurationEditor : Editor
                 desc.serializedObject.ApplyModifiedProperties();
                 r_list.index = 0;
                 r_list.GrabKeyboardFocus();
+                ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, isFocused, true);
             }
-            ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, isFocused, true);
         }
+        ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, isFocused, true);
     }
 
     private void OnDrawerListHearder(Rect rect)
@@ -61,10 +63,13 @@ public class NVRConfigurationEditor : Editor
 
     private void OnDoListElementDraw(Rect rect, int index, bool isActive, bool isFocused)
     {
-        var prop = list.GetArrayElementAtIndex(index);
-        rect.x += 10;
-        rect.width -= 20;
-        PropertyField(rect, prop);
+        if (index >= 0 && index < list.arraySize)
+        {
+            var prop = list.GetArrayElementAtIndex(index);
+            rect.x += 10;
+            rect.width -= 20;
+            PropertyField(rect, prop);
+        }
     }
 
     public override void OnInspectorGUI()

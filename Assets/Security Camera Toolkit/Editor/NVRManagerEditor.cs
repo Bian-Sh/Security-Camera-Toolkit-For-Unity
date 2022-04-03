@@ -74,7 +74,7 @@ public class NVRManagerEditor : Editor
                 }
             }
             // Draw nested inspector
-            editor = config.objectReferenceValue ? CreateEditor(config.objectReferenceValue) as NVRConfigurationEditor : null;
+            editor = editor??config.objectReferenceValue ? CreateEditor(config.objectReferenceValue) as NVRConfigurationEditor : null;
             if (editor)
             {
                 using (EditorGUILayout.VerticalScope scop = new EditorGUILayout.VerticalScope("box"))
