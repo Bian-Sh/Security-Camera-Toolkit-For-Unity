@@ -214,8 +214,9 @@ namespace zFramework.Media
             _droppedFrameTimeAverage.Clear();
             while (_frameQueue.TryDequeue(out T _)) { }
             _unusedFramePool.Clear();
-            _stopwatch.Restart();
+            _stopwatch.Reset();
         }
+        public void RestartTick() => _stopwatch.Restart();
 
         public bool IsQueueBlocked => QueryQueueState();
 

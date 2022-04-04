@@ -20,34 +20,25 @@ namespace zFramework.Media
         private CHCNetSDK.REALDATACALLBACK realDataBack;
         public override void PlayReal()
         {
-            if (HasLogin && !IsRealPlaying)
+            CHCNetSDK.NET_DVR_PREVIEWINFO previewInfo = new CHCNetSDK.NET_DVR_PREVIEWINFO();
+            previewInfo.hPlayWnd = IntPtr.Zero;
+            previewInfo.lChannel = facade.channel;
+            previewInfo.dwStreamType = (uint)facade.steamType;
+            previewInfo.dwLinkMode = 0;
+            previewInfo.bBlocked = true;
+            previewInfo.dwDisplayBufNum = 15;
+            realDataBack = new CHCNetSDK.REALDATACALLBACK(DataBackFunc);
+            realHandle = CHCNetSDK.NET_DVR_RealPlay_V40((int)loginHandle, ref previewInfo, realDataBack, IntPtr.Zero);
+            if (realHandle > -1)
             {
-                CHCNetSDK.NET_DVR_PREVIEWINFO previewInfo = new CHCNetSDK.NET_DVR_PREVIEWINFO();
-                previewInfo.hPlayWnd = IntPtr.Zero;
-                previewInfo.lChannel = facade.channel;
-                previewInfo.dwStreamType = (uint)facade.steamType;
-                previewInfo.dwLinkMode = 0;
-                previewInfo.bBlocked = true;
-                previewInfo.dwDisplayBufNum = 15;
-                realDataBack = new CHCNetSDK.REALDATACALLBACK(DataBackFunc);
-                realHandle = CHCNetSDK.NET_DVR_RealPlay_V40((int)loginHandle, ref previewInfo, realDataBack, IntPtr.Zero);
-                if (realHandle > -1)
-                {
-                    Debug.Log($" { facade.channel } 实时预览成功");
-                }
-                else
-                {
-                    Debug.Log($"预览失败 - { CHCNetSDK.NET_DVR_GetLastError()}");
-                }
+                Debug.Log($" { facade.channel } 实时预览成功");
             }
             else
             {
-                Debug.Log($"播放操作失败：{(HasLogin ? "已经在播放中" : "还没有登录")}");
+                Debug.Log($"预览失败 - { CHCNetSDK.NET_DVR_GetLastError()}");
             }
         }
-
-
-
+      
         private int lPort = -1;
         private DECCBFUN decondCallBack;
         private void DataBackFunc(int lRealHandle, uint dwDataType, IntPtr pBuffer, uint dwBufSize, IntPtr pUser)

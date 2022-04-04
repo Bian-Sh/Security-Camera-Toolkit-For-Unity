@@ -45,6 +45,8 @@ namespace zFramework.Media
             videoMaterial = monitor.materialForRendering;
             CreateEmptyVideoTextures();
         }
+
+
         void Update() => TryProcessI420VideoFrame();
 
 
@@ -63,12 +65,14 @@ namespace zFramework.Media
                 source = null;
             }
             videoFrameQueue?.Clear();
+            videoFrameQueue = null;
             isRendering = false;
             CreateEmptyVideoTextures();
         }
 
         public void PauseRendering() => videoFrameQueue?.Clear();
 
+        internal void ResumeRendering() => videoFrameQueue?.RestartTick();
 
         /// <summary>
         /// 开始处理从视频源推送过来的数据

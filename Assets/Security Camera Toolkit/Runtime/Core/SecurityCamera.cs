@@ -33,33 +33,51 @@ namespace zFramework.Media
         //实时
         public void PlayReal()
         {
-            if (!player.IsRealPlaying)
+            if (player.HasLogin && !player.IsRealPlaying)
             {
                 monitor.StartRendering(player);
                 player.PlayReal();
+            }
+            else
+            {
+                Debug.Log($"播放操作失败：{(player.HasLogin ? "已经在播放中" : "还没有登录")}");
             }
         }
         //暂停
         public void Pause()
         {
-            player.Pause();
-            monitor?.PauseRendering();
+            if (!player.isPause)
+            {
+                player.Pause();
+                monitor?.PauseRendering();
+            }
         }
         //停止
         public void Stop()
         {
-            monitor?.StopRendering();
-            player?.StopPlay();
+            if (player.IsRealPlaying)
+            {
+                monitor?.StopRendering();
+                player?.StopPlay();
+            }
+            else
+            {
+                Debug.Log($"{nameof(SecurityCamera)}:  没有在播放~");
+            }
         }
         //恢复
         public void Resume()
         {
-            player.Resume();
+            if (player.isPause)
+            {
+                player.Resume();
+                monitor?.ResumeRendering();
+            }
         }
 
         private void OnDestroy()
         {
-            // 编辑器下 Security Camera 有几率退出比 NVRManager 要早，所以先 try 为敬
+            // 默认脚本执行顺序下，Security Camera 有几率退出比 NVRManager 要早，所以先 try 为敬
             // 实际开发中，记得在推出前需要主动销毁监控
             try
             {

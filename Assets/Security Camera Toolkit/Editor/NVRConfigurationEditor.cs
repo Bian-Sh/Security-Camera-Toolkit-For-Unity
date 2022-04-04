@@ -97,7 +97,6 @@ public class NVRConfigurationEditor : Editor
     {
         serializedObject.UpdateIfRequiredOrScript();
         BeginChangeCheck();
-        //EditorGUILayout.PropertyField(list);
         r_list.DoLayoutList();
         if (EndChangeCheck())
         {

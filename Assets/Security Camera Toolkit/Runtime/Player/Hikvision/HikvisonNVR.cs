@@ -20,7 +20,7 @@ namespace zFramework.Media
             var state = CHCNetSDK.NET_DVR_Cleanup();
             if (!state)
             {
-                Debug.LogError($"{nameof(HikvisonNVR)}: SDK 初始化失败");
+                Debug.LogError($"{nameof(HikvisonNVR)}: SDK Clean UP 失败");
             }
             return state;
         }
@@ -39,7 +39,7 @@ namespace zFramework.Media
 
         /// <summary>
         /// <inheritdoc/>
-        /// <br>异步操作的 API ，请在调用保持克制，在 UI 层面做一个互锁，简易示例见 NVRController</br>
+        /// <br>异步操作的 API ，请在调用时保持克制，在 UI 层面做一个互锁，简易示例见 NVRController</br>
         /// </summary>
         /// <returns></returns>
         public override async Task LoginAsync()

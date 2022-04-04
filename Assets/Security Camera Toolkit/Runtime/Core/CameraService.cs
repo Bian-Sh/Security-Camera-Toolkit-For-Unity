@@ -11,7 +11,7 @@ namespace zFramework.Media
         public bool Enabled => IsRealPlaying;
 
         //暂停
-        protected bool isPause = false;
+        public bool isPause = false;
         object eventlocka = new object();
         object eventlockb = new object();
         protected bool isVideoRendererReady = false;
@@ -80,7 +80,6 @@ namespace zFramework.Media
         /// <summary>
         /// 暂停播放
         /// </summary>
-        /// <remarks>不建议调用 DHPlaySDK.PLAY_Pause ,因为画面会一直延迟下去</remarks>
         public virtual void Pause()
         {
             if (IsRealPlaying && !isPause)

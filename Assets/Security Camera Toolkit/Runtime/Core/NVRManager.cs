@@ -50,7 +50,6 @@ namespace zFramework.Media
             //注册前先反注册，避免意外注册多次
             Application.wantsToQuit -= Application_wantsToQuit;
             Application.wantsToQuit += Application_wantsToQuit;
-
             EnsureInstanceMode();
 
             if (autoLoadJson)
@@ -97,15 +96,33 @@ namespace zFramework.Media
         #region SDK  Clean up，will automatically cleanup when applicaiton wants to quit
         private bool Application_wantsToQuit()
         {
-            //case 01: 如果 nvr 都没初始化，那就直接不卡退出
-            //case 02:  如果 nvr 列表中存在 nvr 则需要先将 NVR 退出登录（同时退出监控播放）。
-            if (nvrs.Count != 0)
+            if (Application.isEditor)
             {
-                StartCoroutine(CleanUpAsyncOperation());
-                return false;
+                // 因为编辑器下忽略此事件的返回值，所以协程中的逻辑可能不能执行完毕，故而使用同步方式退出。
+                var cameras = nvrs.SelectMany(v => v.Value).SelectMany(v => v.cameras);
+                if (null != cameras)
+                {
+                    foreach (var item in cameras)
+                    {
+                        item.OnLogout();
+                        Debug.Log($"{nameof(NVRManager)}: Camera Logout {item.host}-{item.channel}");
+                    }
+                }
+                SDKClean();
+            }
+            else
+            {
+                //case 01: 如果 nvr 都没初始化，那就直接不卡退出
+                //case 02:  如果 nvr 列表中存在 nvr 则需要先将 NVR 退出登录（同时退出监控播放）。
+                if (nvrs.Count != 0 && null == clearopt)
+                {
+                    clearopt = StartCoroutine(CleanUpAsyncOperation());
+                    return false;
+                }
             }
             return true;
         }
+        Coroutine clearopt = default;
         private IEnumerator CleanUpAsyncOperation()
         {
             //1. 退出在线的 NVR 
@@ -124,12 +141,19 @@ namespace zFramework.Media
             Debug.Log($"{nameof(NVRManager)}: NVR 均已登出....");
             //2. Clean SDK 
             // NVR SDK 的 Clean up 动作只需要执行一次
+            SDKClean();
+            clearopt = null;
+            //3. 真的退出
+            Application.Quit();
+        }
+
+        private void SDKClean()
+        {
             foreach (var item in nvrs)
             {
-                var list = item.Value;
-                if (list.Count > 0)
+                if (item.Value.Count > 0)
                 {
-                    var nvr = list[0];
+                    var nvr = item.Value[0];
                     if (null != nvr)
                     {
                         Debug.Log($"{nameof(NVRManager)}: 正在执行 {nvr.data.type} SDK Clean....");
@@ -137,13 +161,8 @@ namespace zFramework.Media
                     }
                 }
             }
-            nvrs.Clear(); 
-            //3. 真的退出
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            nvrs.Clear();
+            Debug.Log($"{nameof(NVRManager)}: SDK All Clean up");
         }
         #endregion
 

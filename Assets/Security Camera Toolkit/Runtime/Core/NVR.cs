@@ -48,9 +48,9 @@ namespace zFramework.Media
         /// <summary>
         /// 查询挂载到 NVR 的各个相机是否已经同步登录/登出句柄,并处理了各自的登录登出事宜
         /// </summary>
-        /// <param name="isLogin">查询的状态</param>
+        /// <param name="loginstate">查询的状态</param>
         /// <returns></returns>
-        async Task QueryCameraStatusAsync(bool isLogin)
+        async Task QueryCameraStatusAsync(bool loginstate)
         {
             await Task.Run(() =>
             {
@@ -58,7 +58,7 @@ namespace zFramework.Media
                 do
                 {
                     Thread.Sleep(30);//每次检查状态前先等几帧的感觉 ，一般情况下，一帧是 0.02f 
-                    waiting = cameras.Any(v => v.IsLogin != isLogin);
+                    waiting = cameras.Any(v => v.IsLogin != loginstate);
                 } while (waiting);
             });
         }
