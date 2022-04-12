@@ -16,10 +16,8 @@ namespace zFramework.Media
         object eventlockb = new object();
         protected bool isVideoRendererReady = false;
         protected bool isFrameBlockedSignalReady = false;
-        /// <summary>
-        /// 视频帧广播事件
-        /// </summary>
-        public event I420AVideoFrameDelegate OnVideoFrameReady
+        /// <inheritdoc/>
+        public event I422AVideoFrameDelegate OnVideoFrameReady
         {
             add
             {
@@ -38,10 +36,8 @@ namespace zFramework.Media
                 }
             }
         }
-        protected I420AVideoFrameDelegate frameReady;
-        /// <summary>
+        protected I422AVideoFrameDelegate frameReady;
         /// <inheritdoc/>
-        /// </summary>
         public event ProcessInterruptSignal OnInterruptedSignal
         {
             add
@@ -64,10 +60,7 @@ namespace zFramework.Media
         protected ProcessInterruptSignal frameBlocked;
 
         public CameraService() { }
-        public CameraService(SecurityCamera camera)
-        {
-            this.facade = camera;
-        }
+        public CameraService(SecurityCamera camera) => facade = camera;
 
         public void SetLoginHandle(object handle) => loginHandle = handle;
         protected virtual void StopDecoding() { }
@@ -80,38 +73,23 @@ namespace zFramework.Media
         /// <summary>
         /// 暂停播放
         /// </summary>
-        public virtual void Pause()
-        {
-            if (IsRealPlaying && !isPause)
-            {
-                isPause = true;
-            }
-        }
+        public virtual void Pause() => isPause = true;
 
         /// <summary>
         /// 恢复播放
         /// </summary>
-        public virtual void Resume()
-        {
-            if (IsRealPlaying && isPause)
-            {
-                isPause = false;
-            }
-        }
+        public virtual void Resume() => isPause = false;
 
         /// <summary>
         /// 结束播放
         /// </summary>
-        public virtual void StopPlay()
-        {
-            isPause = false;
-        }
+        public virtual void StopPlay() => isPause = false;
     }
     /// <summary>
-    /// Delegate used for events when an I420-encoded video frame has been produced
+    /// Delegate used for events when an I422-encoded video frame has been produced
     /// and is ready for consumption.
     /// </summary>
-    /// <param name="frame">The newly available I420-encoded video frame.</param>
-    public delegate void I420AVideoFrameDelegate(I420VideoFrame frame);
+    /// <param name="frame">The newly available I422-encoded video frame.</param>
+    public delegate void I422AVideoFrameDelegate(I422VideoFrame frame);
     public delegate bool ProcessInterruptSignal();
 }

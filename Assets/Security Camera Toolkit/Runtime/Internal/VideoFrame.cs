@@ -5,10 +5,10 @@ using System;
 namespace zFramework.Media
 {
     /// <summary>
-    /// Single video frame encoded in I420A format , YUV Raw data
-    /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
+    /// Single video frame encoded in I422 format , YUV Raw data
+    /// See e.g. https://wiki.videolan.org/YUV/#I422 for details.
     /// </summary>
-    public ref struct I420VideoFrame
+    public ref struct I422VideoFrame
     {
         /// <summary>
         /// Frame width, in pixels.
@@ -20,13 +20,22 @@ namespace zFramework.Media
         /// </summary>
         public int height;
 
+        /// <summary>
+        /// YUV Raw data
+        /// </summary>
         private byte[] buffer_Y;
         private byte[] buffer_U;
         private byte[] buffer_V;
+        /// <summary>
+        /// 亮度信号数据尺寸（Y）
+        /// </summary>
         private int lumasize;
+        /// <summary>
+        /// 色度信号数据尺寸（U、V）
+        /// </summary>
         private int chromasize;
 
-        private I420VideoFrame(int width, int height)
+        private I422VideoFrame(int width, int height)
         {
             this.width = width;
             this.height = height;
@@ -36,8 +45,8 @@ namespace zFramework.Media
             buffer_U = new byte[chromasize];
             buffer_V = new byte[chromasize];
         }
-        public I420VideoFrame(int width, int height, IntPtr yuv) : this(width, height) => Copy(yuv);
-        public I420VideoFrame(int width, int height, IntPtr src_y, IntPtr src_u, IntPtr src_v) : this(width, height) => Copy(src_y, src_u, src_v);
+        public I422VideoFrame(int width, int height, IntPtr yuv) : this(width, height) => Copy(yuv);
+        public I422VideoFrame(int width, int height, IntPtr src_y, IntPtr src_u, IntPtr src_v) : this(width, height) => Copy(src_y, src_u, src_v);
 
 
         //大华播放库返回的是 YUV IntPtr 类型的打包数据,需要拆分开来
@@ -74,7 +83,7 @@ namespace zFramework.Media
             }
         }
 
-        public void ApplyTo<T>(T target) where T : class, IVideoFrameStorage, new()
+        public void ApplyTo<T>(T target) where T : IVideoFrameStorage
         {
             target.Height = height;
             target.Width = width;

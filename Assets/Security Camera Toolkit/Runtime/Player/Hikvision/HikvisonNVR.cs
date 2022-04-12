@@ -11,7 +11,7 @@ namespace zFramework.Media
         /// <summary>
         /// 断言 NVR 是否登录
         /// </summary>
-        public override bool IsLogin => null != loginHandle && (int)loginHandle > -1;//(int)(loginHandle??-1)> -1;
+        public override bool IsLogin => (int)(loginHandle ?? -1) > -1;
 
         public HikvisonNVR(NVRInformation data) : base(data) { }
 

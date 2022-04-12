@@ -14,20 +14,21 @@ namespace zFramework.Media.Internal
 {
     /// <summary>
     /// 任务同步器：在主线程中执行 Action 委托
+    /// <br>原名 TaskSync，但是觉得 Loom（织布机）更有意境</br>
     /// </summary>
-    public static class TaskSync
+    public static class Loom
     {
         static SynchronizationContext context;
         static readonly ConcurrentQueue<Action> tasks = new ConcurrentQueue<Action>();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void InitContext()
+        static void Install()
         {
             context = SynchronizationContext.Current;
             #region 使用 PlayerLoop 在 Unity 主线程的 Update 中更新本任务同步器
             var playerloop = PlayerLoop.GetCurrentPlayerLoop();
             var loop = new PlayerLoopSystem
             {
-                type = typeof(TaskSync),
+                type = typeof(Loom),
                 updateDelegate = Update
             };
             //1. 找到 Update Loop System
@@ -62,7 +63,7 @@ namespace zFramework.Media.Internal
         [InitializeOnLoadMethod]
         static void EditorForceUpdate()
         {
-            InitContext();
+            Install();
             EditorApplication.update -= ForceEditorPlayerLoopUpdate;
             EditorApplication.update += ForceEditorPlayerLoopUpdate;
             void ForceEditorPlayerLoopUpdate()

@@ -36,9 +36,9 @@ namespace zFramework.Media
     }
 
     /// <summary>
-    /// Storage for a video frame encoded in I420  format.
+    /// Storage for a video frame encoded in I422  format.
     /// </summary>
-    public class I420AVideoFrameStorage : IVideoFrameStorage
+    public class I422VideoFrameStorage : IVideoFrameStorage
     {
         /// <summary>
         /// Frame width, in pixels.
@@ -96,45 +96,20 @@ namespace zFramework.Media
     public class VideoFrameQueue<T> : IVideoFrameQueue where T : class, IVideoFrameStorage, new()
     {
         /// <inheritdoc/>
-        public float QueuedFramesPerSecond
-        {
-            get
-            {
-                var value = 1000f / _queuedFrameTimeAverage.Average;
-                if (float.IsInfinity(value))
-                {
-                    value = 0;
-                }
-                return value;
-            }
-        }
-
+        public float QueuedFramesPerSecond => Calc(_queuedFrameTimeAverage);
         /// <inheritdoc/>
-        public float DequeuedFramesPerSecond
-        {
-            get
-            {
-                var value = 1000f / _dequeuedFrameTimeAverage.Average;
-                if (float.IsInfinity(value))
-                {
-                    value = 0;
-                }
-                return value;
-            }
-        }
-
+        public float DequeuedFramesPerSecond => Calc(_dequeuedFrameTimeAverage);
         /// <inheritdoc/>
-        public float DroppedFramesPerSecond
+        public float DroppedFramesPerSecond => Calc(_droppedFrameTimeAverage);
+
+        private float Calc(DynamicAverage target) 
         {
-            get
+            var value = 1000f / target.Average;
+            if (float.IsInfinity(value))
             {
-                var value = 1000f / _droppedFrameTimeAverage.Average;
-                if (float.IsInfinity(value))
-                {
-                    value = 0;
-                }
-                return value;
+                value = 0;
             }
+            return value;
         }
         /// <summary>
         /// Queue of frames pending delivery to sink.
@@ -176,17 +151,17 @@ namespace zFramework.Media
         /// <summary>
         /// Moving average of the queued frame time, in frames per second.
         /// </summary>
-        private DynamicAverage _queuedFrameTimeAverage = new DynamicAverage(30);
+        private DynamicAverage _queuedFrameTimeAverage = new DynamicAverage(15);
 
         /// <summary>
         /// Moving average of the dequeued frame time, in frames per second.
         /// </summary>
-        private DynamicAverage _dequeuedFrameTimeAverage = new DynamicAverage(30);
+        private DynamicAverage _dequeuedFrameTimeAverage = new DynamicAverage(15);
 
         /// <summary>
         /// Moving average of the dropped frame time, in frames per second.
         /// </summary>
-        private DynamicAverage _droppedFrameTimeAverage = new DynamicAverage(30);
+        private DynamicAverage _droppedFrameTimeAverage = new DynamicAverage(15);
 
         #endregion
 
@@ -243,12 +218,12 @@ namespace zFramework.Media
 
 
         /// <summary>
-        /// Enqueue a new video frame encoded in I420 format.
+        /// Enqueue a new video frame encoded in I422 format.
         /// If the internal queue reached its maximum capacity,drop the current 
         /// </summary>
         /// <param name="frame">The video frame to enqueue</param>
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
-        public void Enqueue(I420VideoFrame frame)
+        public void Enqueue(I422VideoFrame frame)
         {
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
@@ -301,24 +276,5 @@ namespace zFramework.Media
         {
             _unusedFramePool.Push(frame);
         }
-
-        /// <summary>
-        /// Track statistics for a late frame, which short-circuits the queue and is delivered
-        /// as soon as it is received.
-        /// </summary>
-        public void TrackLateFrame()
-        {
-            double curTime = _stopwatch.Elapsed.TotalMilliseconds;
-
-            float queuedDt = (float)(curTime - _lastQueuedTimeMs);
-            _lastQueuedTimeMs = curTime;
-            _queuedFrameTimeAverage.Push(queuedDt);
-
-            float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
-            _lastDequeuedTimeMs = curTime;
-            _dequeuedFrameTimeAverage.Push(dequeuedDt);
-            _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
-        }
-
     }
 }

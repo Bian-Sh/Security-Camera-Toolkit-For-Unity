@@ -47,7 +47,7 @@ namespace zFramework.Media
         }
 
 
-        void Update() => TryProcessI420VideoFrame();
+        void Update() => TryProcessI422VideoFrame();
 
 
         #endregion
@@ -60,7 +60,7 @@ namespace zFramework.Media
         {
             if (null != source)
             {
-                source.OnVideoFrameReady -= I420AVideoFrameReady;
+                source.OnVideoFrameReady -= I422AVideoFrameReady;
                 source.OnInterruptedSignal -= OnInterruptedSignal;
                 source = null;
             }
@@ -80,8 +80,8 @@ namespace zFramework.Media
         public void StartRendering(IVideoSource source)
         {
             this.source = source;
-            videoFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(maxFrameQueueSize);
-            source.OnVideoFrameReady += I420AVideoFrameReady;
+            videoFrameQueue = new VideoFrameQueue<I422VideoFrameStorage>(maxFrameQueueSize);
+            source.OnVideoFrameReady += I422AVideoFrameReady;
             source.OnInterruptedSignal += OnInterruptedSignal;
             isRendering = true;
         }
@@ -102,13 +102,13 @@ namespace zFramework.Media
                 videoMaterial.SetTexture(attr_v, _textureV);
             }
         }
-        protected void I420AVideoFrameReady(I420VideoFrame frame)
+        protected void I422AVideoFrameReady(I422VideoFrame frame)
         {
             // 视频数据的采集是在非 Unity 主线程，为了渲染到 UI ，先进栈等待主线程处理
             videoFrameQueue.Enqueue(frame);
         }
 
-        private void TryProcessI420VideoFrame()
+        private void TryProcessI422VideoFrame()
         {
             // 计算取画面帧的间隔，想流畅就接近推流速率，比如推流 25 fps，你就设置25 左右
             // 反之，设小的话，推流时就会丢弃帧数据，显得不流畅，但是渲染减少，内存对拷减少，进而性能更好些
@@ -131,7 +131,7 @@ namespace zFramework.Media
 
             void DoProcess()
             {
-                if (videoFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
+                if (videoFrameQueue.TryDequeue(out I422VideoFrameStorage frame))
                 {
                     lumaWidth = frame.Width;
                     lumaHeight = frame.Height;
@@ -199,7 +199,7 @@ namespace zFramework.Media
         /// <summary>
         /// 视频帧队列
         /// </summary>
-        private VideoFrameQueue<I420AVideoFrameStorage> videoFrameQueue = null;
+        private VideoFrameQueue<I422VideoFrameStorage> videoFrameQueue = null;
         private float frameDuration;
         private float lastUpdateTime;
 

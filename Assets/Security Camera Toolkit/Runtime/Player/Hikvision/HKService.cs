@@ -99,7 +99,7 @@ namespace zFramework.Media
                 var blocked = frameBlocked?.Invoke() ?? true;
                 if (!blocked)
                 {
-                    var frame = new I420VideoFrame(pFrameInfo.nWidth, pFrameInfo.nHeight, pBuf);
+                    var frame = new I422VideoFrame(pFrameInfo.nWidth, pFrameInfo.nHeight, pBuf);
                     frameReady?.Invoke(frame);
                 }
             }
@@ -113,7 +113,7 @@ namespace zFramework.Media
                 var temp = realHandle; //避免多次访问 SDK 
                 realHandle = -1;
                 var result = CHCNetSDK.NET_DVR_StopRealPlay(temp);
-                Debug.Log($"{nameof(HKService)}: 停止实时播放{(result ? "成功" : "失败")}");
+                Debug.Log($"{nameof(HKService)}: 停止实时播放{(result ? "成功" : $"失败,Errorcode = {CHCNetSDK.NET_DVR_GetLastError()}")}");
             }
             base.StopPlay();
         }
