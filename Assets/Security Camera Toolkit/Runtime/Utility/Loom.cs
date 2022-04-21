@@ -96,9 +96,16 @@ namespace zFramework.Media.Internal
 
         static void Update()
         {
-            if (tasks.TryDequeue(out var task))
+            while (tasks.TryDequeue(out var task))
             {
-                task?.Invoke();
+                try
+                {
+                    task?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"{nameof(Loom)}:  封送的任务执行过程中发现异常，请确认: {e}");
+                }
             }
         }
     }
