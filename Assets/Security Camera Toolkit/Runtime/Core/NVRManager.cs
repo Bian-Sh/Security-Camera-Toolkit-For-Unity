@@ -136,12 +136,13 @@ namespace zFramework.Media
             Debug.Log($"{nameof(NVRManager)}: 正在执行 NVR 登出....");
             while (!task.IsCompleted)
             {
-                yield return 0;
+                yield return null;
             }
             Debug.Log($"{nameof(NVRManager)}: NVR 均已登出....");
             //2. Clean SDK 
             // NVR SDK 的 Clean up 动作只需要执行一次
             SDKClean();
+            yield return null;
             clearopt = null;
             //3. 真的退出
             Application.Quit();
