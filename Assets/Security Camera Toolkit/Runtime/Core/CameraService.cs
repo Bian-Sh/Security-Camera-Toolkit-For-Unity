@@ -84,6 +84,27 @@ namespace zFramework.Media
         /// 结束播放
         /// </summary>
         public virtual void StopPlay() => isPause = false;
+        
+        public virtual void PTZUp() {}
+        
+        public virtual void PTZDown(){}
+        public virtual void PTZLeft(){}
+        public virtual void PTZRight(){}
+        
+        public virtual void PTZUpLeft(){}
+        
+        public virtual void PTZUpRight(){}
+        
+        public virtual void PTZDownLeft(){}
+        public virtual void PTZDownRight(){}
+        
+        public virtual void ZOOMMtele(){}
+        public virtual void ZOOMWide(){}
+        
+        public virtual void FocusNear(){}
+        public virtual void FocusFar(){}
+        
+        public virtual void PTZAllStop(){}
     }
     /// <summary>
     /// Delegate used for events when an I422-encoded video frame has been produced
