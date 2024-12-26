@@ -8,6 +8,13 @@
 > 
 > 欢迎各位同仁通过推送 PR 的方式丰富本项目功能，比如 其他厂商SDK的接入， PTZ ，回放，查询，事件的接入等等...
 
+## 功能
+
+* 实现了海康的 NVR 连接与监控的实时播放
+* 实现了宇视的 NVR 连接与监控的实时播放，由@[Danchuan](https://github.com/Danchuan) PR 支持
+* 实现了宇视的 PTZ 控制，由@[Danchuan](https://github.com/Danchuan) PR 支持
+
+
 ## 动画演示
 
 ![](./docs/securityCamera.gif)
